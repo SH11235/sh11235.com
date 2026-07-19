@@ -190,19 +190,19 @@
       <p>Rust 製 USI 将棋エンジン。ビットボード、Alpha-Beta 探索、NNUE 評価関数、Lazy SMP。教師生成・定跡・分析用の CLI ツール 58 本を同梱。</p></article>
     <article class="card" id="card-csa"><h3><a href="https://github.com/SH11235/rshogi/tree/main/crates">対局インフラ</a></h3>
       <span class="repo"><a href="https://github.com/SH11235/rshogi/tree/main/crates">rshogi/crates/rshogi-csa-*</a></span>
-      <p>CSA プロトコルのクライアント・サーバー。本番は Cloudflare Workers + R2 で稼働し、floodgate にも接続。</p></article>
+      <p>CSA プロトコルのクライアント・サーバー実装。サーバーは Cloudflare Workers + R2 で稼働中。クライアントは自前サーバーにも floodgate にも接続できる。</p></article>
     <article class="card" id="card-ramu"><h3><a href="https://ramu-shogi.sh11235.com/">ラム将棋</a></h3>
       <span class="repo"><a href="https://ramu-shogi.sh11235.com/">ramu-shogi.sh11235.com</a></span>
       <p>Web・デスクトップ将棋アプリ。rshogi を WASM で内蔵。CSA 対局の live 観戦ビューアー付き。</p></article>
     <article class="card" id="card-tatara"><h3><a href="https://github.com/SH11235/tatara">tatara</a></h3>
       <span class="repo"><a href="https://github.com/SH11235/tatara">SH11235/tatara</a></span>
-      <p>NNUE 評価関数の学習ツール。CUDA カーネルを Rust から生成。bullet-shogi から発展。</p></article>
+      <p>NNUE 評価関数の学習ツール。手で fusion した CUDA カーネルで爆速。bullet-shogi から発展。</p></article>
     <article class="card" id="card-nnuelab"><h3><a href="https://nnue-lab.sh11235.com/t/sh11235">nnue-lab</a></h3>
       <span class="repo"><a href="https://nnue-lab.sh11235.com/t/sh11235">nnue-lab.sh11235.com/t/sh11235</a></span>
       <p>学習実験の記録・可視化 Web アプリ。loss カーブの重ね描き比較、lineage 連結、NNUE・エンジンバイナリの管理。</p></article>
     <article class="card" id="card-bullet"><h3><a href="https://github.com/SH11235/bullet-shogi">bullet-shogi</a></h3>
       <span class="repo"><a href="https://github.com/SH11235/bullet-shogi">SH11235/bullet-shogi</a></span>
-      <p>NNUE 学習ライブラリ bullet の将棋特化 fork。tatara の前身で、現在は tatara への移行を推奨。</p></article>
+      <p>チェス用 NNUE 学習ライブラリ <a href="https://github.com/jw1912/bullet">bullet</a> の将棋特化 fork。tatara の前身で、現在は tatara への移行を推奨。</p></article>
   </div>
 </section>
 
