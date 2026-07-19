@@ -76,6 +76,7 @@
   .n { cursor: pointer; transform-box: fill-box; transform-origin: center; transition: transform .15s ease-out; }
   .n:hover text.t, svg a:focus-visible .n text.t { fill: var(--shu); }
   .n:active { transform: scale(.975); }
+  .cnr { fill: none; stroke: var(--shu); stroke-width: 1.2; opacity: .85; }
   .nnicon circle { fill: var(--shu); }
   .nnicon line { stroke: var(--shu); stroke-width: .8; opacity: .75; }
   svg a { outline: none; }
@@ -137,9 +138,12 @@
           <a href="#card-engine"><g class="n"><rect class="hit" x="265" y="66" width="140" height="52"/><text class="t" x="335" y="92">PSV 加工</text><text class="m" x="335" y="112">dedup / shuffle</text></g></a>
           <a href="#card-engine"><g class="n"><rect class="hit" x="60" y="190" width="140" height="52"/><text class="t" x="130" y="216">実戦で評価</text><text class="m" x="130" y="236">selfplay / floodgate</text></g></a>
           <a href="#card-tatara"><g class="n"><rect class="hit" x="265" y="190" width="140" height="52"/><text class="t" x="335" y="216">tatara</text><text class="m" x="335" y="236">NNUE 学習 / CUDA</text></g></a>
-          <a href="#card-nnuelab"><g class="n"><rect class="hit" x="450" y="280" width="150" height="52"/><text class="t" x="525" y="304">nnue-lab</text><text class="m" x="525" y="324">実験の記録・可視化 / web</text></g></a>
+          <a href="#card-nnuelab"><g class="n"><rect class="hit" x="450" y="280" width="150" height="52"/>
+            <path class="cnr" d="M450 291 L450 280 L461 280 M589 280 L600 280 L600 291 M600 321 L600 332 L589 332 M461 332 L450 332 L450 321"/>
+            <text class="t" x="525" y="304">nnue-lab</text><text class="m" x="525" y="324">実験の記録・可視化 / web</text></g></a>
 
           <a href="#card-engine"><g class="n hub"><rect class="hit" x="450" y="160" width="150" height="60"/>
+            <path class="cnr" d="M450 171 L450 160 L461 160 M589 160 L600 160 L600 171 M600 209 L600 220 L589 220 M461 220 L450 220 L450 209"/>
             <text class="t" x="525" y="192">rshogi</text><text class="m" x="525" y="214">USI engine</text></g></a>
 
           <a href="#card-csa"><g class="n"><rect class="hit" x="631" y="118" width="140" height="52"/><text class="t" x="701" y="144">csa-server</text><text class="m" x="701" y="164">CF Workers + R2</text></g></a>
