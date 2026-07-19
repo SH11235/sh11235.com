@@ -121,14 +121,14 @@
     <p class="lead">将棋エンジン・対局サーバー・GUI・評価関数の学習ツールを Rust で自作しています。</p>
 
     <div class="map">
-        <svg class="mapsvg" viewBox="0 0 980 400" role="img" aria-label="ソフトウェア相関図: 学習系統と対局系統の中心に rshogi">
+        <svg class="mapsvg" viewBox="0 0 980 360" role="img" aria-label="ソフトウェア相関図: 学習系統と対局系統の中心に rshogi">
           <defs>
             <marker id="tp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#26221C"/></marker>
             <marker id="tps" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#B33A2B"/></marker>
           </defs>
 
           <!-- 系統は枠線でなく淡い色面で示す -->
-          <rect class="wash" x="20" y="16" width="420" height="350"/>
+          <rect class="wash" x="20" y="16" width="420" height="264"/>
           <text class="grpl" x="36" y="44">学習系統</text>
           <rect class="wash cool" x="610" y="68" width="350" height="264"/>
           <text class="grpl" x="626" y="96">対局系統</text>
@@ -137,7 +137,7 @@
           <a href="#card-engine"><g class="n"><rect class="hit" x="265" y="66" width="140" height="52"/><text class="t" x="335" y="92">PSV 加工</text><text class="m" x="335" y="112">dedup / shuffle</text></g></a>
           <a href="#card-engine"><g class="n"><rect class="hit" x="60" y="190" width="140" height="52"/><text class="t" x="130" y="216">実戦で評価</text><text class="m" x="130" y="236">selfplay / floodgate</text></g></a>
           <a href="#card-tatara"><g class="n"><rect class="hit" x="265" y="190" width="140" height="52"/><text class="t" x="335" y="216">tatara</text><text class="m" x="335" y="236">NNUE 学習 / CUDA</text></g></a>
-          <a href="#card-nnuelab"><g class="n"><rect class="hit" x="150" y="278" width="160" height="48"/><text class="t" x="230" y="302">nnue-lab</text><text class="m" x="230" y="322">実験の記録・可視化 / web</text></g></a>
+          <a href="#card-nnuelab"><g class="n"><rect class="hit" x="450" y="280" width="150" height="52"/><text class="t" x="525" y="304">nnue-lab</text><text class="m" x="525" y="324">実験の記録・可視化 / web</text></g></a>
 
           <a href="#card-engine"><g class="n hub"><rect class="hit" x="450" y="160" width="150" height="60"/>
             <text class="t" x="525" y="192">rshogi</text><text class="m" x="525" y="214">USI engine</text></g></a>
@@ -152,8 +152,8 @@
           <path class="ar shu" d="M 382 210 C 425 202 445 196 462 190"/>
           <path class="ar" d="M 500 220 C 420 258 300 252 204 218"/>
           <path class="ar" d="M 130 194 L 130 108"/>
-          <path class="ar" d="M 330 242 L 288 286"/>
-          <path class="ar" d="M 134 242 L 180 286"/>
+          <path class="ar" d="M 358 240 C 395 268 425 284 458 296"/>
+          <path class="ar" d="M 132 244 C 165 302 310 320 446 308"/>
           <path class="ar" d="M 562 198 C 610 225 635 245 656 262"/>
           <path class="ar" d="M 701 250 L 701 172"/>
           <path class="ar" d="M 748 140 L 834 140"/>
