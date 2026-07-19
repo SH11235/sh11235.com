@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SH11235 — 将棋にまつわるソフトを全部作る</title>
+<meta name="description" content="将棋エンジン rshogi、CSA 対局サーバー、将棋アプリ ラム将棋、NNUE 学習ツール tatara など、将棋にまつわるソフトウェアを Rust で自作しています。">
+<meta property="og:title" content="SH11235 — 将棋にまつわるソフトを全部作る">
+<meta property="og:description" content="将棋エンジン・対局サーバー・GUI・評価関数の学習ツールを Rust で自作しています。">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>&#x2617;</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600&family=IBM+Plex+Sans+JP:wght@400;500&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #FAF9F5;
+    --ink: #26221C;
+    --wood: #C9A25E;
+    --shu: #B33A2B;
+    --mute: #8A857C;
+    --faint: rgba(38,34,28,.14);
+    --mincho: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
+    --sans: "IBM Plex Sans JP", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", "Yu Gothic", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-optical-sizing: auto; scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { background: var(--paper); color: var(--ink); font-family: var(--sans); line-height: 1.9; }
+  a { color: inherit; }
+
+  /* 半透明マテリアルのヘッダー。境界は 1px 線でなく淡いグラデーションで溶かす */
+  header.site {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 18px 44px; position: sticky; top: 0; z-index: 5;
+    background: rgba(250,249,245,.62);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    backdrop-filter: blur(18px) saturate(160%);
+  }
+  header.site::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -10px; height: 10px;
+    background: linear-gradient(rgba(38,34,28,.05), transparent); pointer-events: none;
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    header.site { background: var(--paper); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  }
+  header.site .mei { font-family: var(--mincho); font-size: 19px; letter-spacing: .1em; }
+  header.site .mei small { font-family: var(--mono); font-size: 10.5px; color: var(--mute); margin-left: 14px; }
+  header.site nav { font-size: 13px; color: var(--mute); letter-spacing: .06em; }
+  header.site nav a { text-decoration: none; margin-left: 22px; transition: color .12s ease-out; }
+  header.site nav a:hover, header.site nav a:focus-visible { color: var(--ink); }
+  header.site nav a:active { opacity: .55; }
+  a:focus-visible { outline: 2px solid var(--shu); outline-offset: 3px; }
+
+  .stage { position: relative; overflow: hidden; }
+  .stage-inner { position: relative; z-index: 1; max-width: 1150px; margin: 0 auto; padding: 34px 44px 70px; text-align: center; }
+  .stage-inner h1 {
+    font-family: var(--mincho); font-size: clamp(1.8rem, 4.2vw, 2.6rem); font-weight: 600;
+    letter-spacing: .05em; line-height: 1.4; text-wrap: balance;
+  }
+  .stage-inner p.lead { font-size: .875rem; letter-spacing: 0; max-width: 32em; margin: 14px auto 0; color: #45403A; }
+
+  /* ── 相関図 ── */
+  .map { margin: 34px auto 0; max-width: 1000px; text-align: left; }
+  .map svg.mapsvg { position: relative; z-index: 1; display: block; width: 100%; height: auto; }
+  .map .caption { font-family: var(--mono); font-size: 10.5px; color: var(--mute); padding: 6px 12px 10px; text-align: center; }
+
+  .wash { fill: rgba(201,162,94,.09); }
+  .wash.cool { fill: rgba(38,34,28,.04); }
+  .grpl { font-family: var(--mincho); font-size: 12px; letter-spacing: .3em; fill: #57524A; }
+  .n text.t { font-family: var(--mincho); font-size: 15.5px; font-weight: 600; fill: var(--ink); text-anchor: middle; transition: fill .12s ease-out; }
+  .n text.m { font-family: var(--mono); font-size: 9.5px; fill: var(--mute); text-anchor: middle; }
+  .n.hub text.t { font-size: 22px; }
+  .n rect.hit { fill: transparent; }
+  .n { cursor: pointer; transform-box: fill-box; transform-origin: center; transition: transform .15s ease-out; }
+  .n:hover text.t, svg a:focus-visible .n text.t { fill: var(--shu); }
+  .n:active { transform: scale(.975); }
+  .nnicon circle { fill: var(--shu); }
+  .nnicon line { stroke: var(--shu); stroke-width: .8; opacity: .75; }
+  svg a { outline: none; }
+  @media (prefers-reduced-motion: reduce) { .n, .n text.t, header.site nav a { transition: none; } .n:active { transform: none; } }
+
+  .ar { stroke: var(--ink); stroke-width: 1.2; fill: none; marker-end: url(#tp); }
+  .ar.shu { stroke: var(--shu); marker-end: url(#tps); }
+  .al { font-family: var(--mono); font-size: 9.5px; fill: var(--mute); text-anchor: middle; }
+
+  /* ── 作っているもの ── */
+  section.apps { max-width: 1150px; margin: 26px auto 0; padding: 0 44px 70px; }
+  section.apps h2 { font-family: var(--mincho); font-size: 22px; letter-spacing: .28em; border-bottom: 1px solid var(--ink); padding-bottom: 12px; margin-bottom: 30px; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 34px; }
+  @media (max-width: 900px) { .cards { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .cards { grid-template-columns: 1fr; } }
+  .card h3 { font-family: var(--mincho); font-size: 18px; letter-spacing: .1em; }
+  .card h3 a { text-decoration: none; }
+  .card h3 a:hover { color: var(--shu); }
+  .card .repo { font-family: var(--mono); font-size: 11px; color: var(--mute); display: block; margin: 3px 0 9px; }
+  .card .repo a { color: inherit; text-decoration: none; }
+  .card .repo a:hover { color: var(--shu); text-decoration: underline; }
+  .card p { font-size: 13.5px; }
+  .card:target h3 { color: var(--shu); }
+
+  footer { text-align: center; font-family: var(--mono); font-size: 11px; color: var(--mute); padding: 28px 0 40px; border-top: 1px solid var(--faint); }
+  footer a { color: inherit; }
+  footer a:hover { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="mei">SH11235<small>shogi software</small></div>
+  <nav>
+    <a href="#apps">アプリ</a>
+    <a href="https://github.com/SH11235">GitHub</a>
+  </nav>
+</header>
+
+<div class="stage">
+  <div class="stage-inner">
+    <h1>将棋にまつわるソフトを全部作る</h1>
+    <p class="lead">将棋エンジン・対局サーバー・GUI・評価関数の学習ツールを Rust で自作しています。</p>
+
+    <div class="map">
+        <svg class="mapsvg" viewBox="0 0 980 400" role="img" aria-label="ソフトウェア相関図: 学習系統と対局系統の中心に rshogi">
+          <defs>
+            <marker id="tp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#26221C"/></marker>
+            <marker id="tps" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#B33A2B"/></marker>
+          </defs>
+
+          <!-- 系統は枠線でなく淡い色面で示す -->
+          <rect class="wash" x="20" y="16" width="420" height="350"/>
+          <text class="grpl" x="36" y="44">学習系統</text>
+          <rect class="wash cool" x="610" y="68" width="350" height="264"/>
+          <text class="grpl" x="626" y="96">対局系統</text>
+
+          <a href="#card-engine"><g class="n"><rect class="hit" x="60" y="66" width="140" height="52"/><text class="t" x="130" y="92">教師生成</text><text class="m" x="130" y="112">rshogi tools</text></g></a>
+          <a href="#card-engine"><g class="n"><rect class="hit" x="265" y="66" width="140" height="52"/><text class="t" x="335" y="92">PSV 加工</text><text class="m" x="335" y="112">dedup / shuffle</text></g></a>
+          <a href="#card-engine"><g class="n"><rect class="hit" x="60" y="190" width="140" height="52"/><text class="t" x="130" y="216">実戦で評価</text><text class="m" x="130" y="236">selfplay / floodgate</text></g></a>
+          <a href="#card-tatara"><g class="n"><rect class="hit" x="265" y="190" width="140" height="52"/><text class="t" x="335" y="216">tatara</text><text class="m" x="335" y="236">NNUE 学習 / CUDA</text></g></a>
+          <a href="#card-nnuelab"><g class="n"><rect class="hit" x="150" y="278" width="160" height="48"/><text class="t" x="230" y="302">nnue-lab</text><text class="m" x="230" y="322">実験の記録・可視化 / web</text></g></a>
+
+          <a href="#card-engine"><g class="n hub"><rect class="hit" x="450" y="160" width="150" height="60"/>
+            <text class="t" x="525" y="192">rshogi</text><text class="m" x="525" y="214">USI engine</text></g></a>
+
+          <a href="#card-csa"><g class="n"><rect class="hit" x="631" y="118" width="140" height="52"/><text class="t" x="701" y="144">csa-server</text><text class="m" x="701" y="164">CF Workers + R2</text></g></a>
+          <a href="#card-csa"><g class="n"><rect class="hit" x="631" y="242" width="140" height="52"/><text class="t" x="701" y="268">csa-client</text><text class="m" x="701" y="288">USI ⇔ CSA</text></g></a>
+          <a href="#card-ramu"><g class="n"><rect class="hit" x="805" y="118" width="140" height="52"/><text class="t" x="875" y="144">ラム将棋</text><text class="m" x="875" y="164">web / desktop</text></g></a>
+          <a href="http://wdoor.c.u-tokyo.ac.jp/shogi/floodgate.html" target="_blank" rel="noopener"><g class="n"><rect class="hit" x="805" y="242" width="140" height="52"/><text class="t" x="875" y="268">floodgate</text><text class="m" x="875" y="288">外部対局場</text></g></a>
+
+          <path class="ar" d="M 178 88 L 285 88"/>
+          <path class="ar" d="M 335 104 L 335 196"/>
+          <path class="ar shu" d="M 382 210 C 425 202 445 196 462 190"/>
+          <path class="ar" d="M 500 220 C 420 258 300 252 204 218"/>
+          <path class="ar" d="M 130 194 L 130 108"/>
+          <path class="ar" d="M 330 242 L 288 286"/>
+          <path class="ar" d="M 134 242 L 180 286"/>
+          <path class="ar" d="M 562 198 C 610 225 635 245 656 262"/>
+          <path class="ar" d="M 701 250 L 701 172"/>
+          <path class="ar" d="M 748 140 L 834 140"/>
+          <path class="ar" d="M 748 264 L 834 264"/>
+          <text class="al" x="232" y="78">生棋譜</text>
+          <text class="al" x="368" y="152">教師データ</text>
+          <!-- NNUE = 小さなネットワーク図形 (3-2-1 の結線) + ラベル -->
+          <g class="nnicon" transform="translate(398,172)">
+            <line x1="0" y1="0" x2="9" y2="3.5"/><line x1="0" y1="7" x2="9" y2="3.5"/><line x1="0" y1="14" x2="9" y2="3.5"/>
+            <line x1="0" y1="0" x2="9" y2="10.5"/><line x1="0" y1="7" x2="9" y2="10.5"/><line x1="0" y1="14" x2="9" y2="10.5"/>
+            <line x1="9" y1="3.5" x2="18" y2="7"/><line x1="9" y1="10.5" x2="18" y2="7"/>
+            <circle cx="0" cy="0" r="1.7"/><circle cx="0" cy="7" r="1.7"/><circle cx="0" cy="14" r="1.7"/>
+            <circle cx="9" cy="3.5" r="1.7"/><circle cx="9" cy="10.5" r="1.7"/><circle cx="18" cy="7" r="1.7"/>
+          </g>
+          <text class="al" x="440" y="184" style="fill:#B33A2B">NNUE</text>
+          <text class="al" x="408" y="264">対局結果</text>
+          <text class="al" x="588" y="238">USI</text>
+          <text class="al" x="664" y="214">WebSocket</text>
+          <text class="al" x="790" y="130">live</text>
+          <text class="al" x="790" y="254">TCP</text>
+        </svg>
+      <div class="caption">相関図 — 朱の矢印は学習の成果 (NNUE) の還流。名前をクリックすると各節へ移動します</div>
+    </div>
+  </div>
+</div>
+
+<section class="apps" id="apps">
+  <h2>作っているもの</h2>
+  <div class="cards">
+    <article class="card" id="card-engine"><h3><a href="https://github.com/SH11235/rshogi">rshogi</a></h3>
+      <span class="repo"><a href="https://github.com/SH11235/rshogi">SH11235/rshogi</a></span>
+      <p>Rust 製 USI 将棋エンジン。ビットボード、Alpha-Beta 探索、NNUE 評価関数、Lazy SMP。教師生成・定跡・分析用の CLI ツール 58 本を同梱。</p></article>
+    <article class="card" id="card-csa"><h3><a href="https://github.com/SH11235/rshogi/tree/main/crates">対局インフラ</a></h3>
+      <span class="repo"><a href="https://github.com/SH11235/rshogi/tree/main/crates">rshogi/crates/rshogi-csa-*</a></span>
+      <p>CSA プロトコルのクライアント・サーバー。本番は Cloudflare Workers + R2 で稼働し、floodgate にも接続。</p></article>
+    <article class="card" id="card-ramu"><h3><a href="https://ramu-shogi.sh11235.com/">ラム将棋</a></h3>
+      <span class="repo"><a href="https://ramu-shogi.sh11235.com/">ramu-shogi.sh11235.com</a></span>
+      <p>Web・デスクトップ将棋アプリ。rshogi を WASM で内蔵。CSA 対局の live 観戦ビューアー付き。</p></article>
+    <article class="card" id="card-tatara"><h3><a href="https://github.com/SH11235/tatara">tatara</a></h3>
+      <span class="repo"><a href="https://github.com/SH11235/tatara">SH11235/tatara</a></span>
+      <p>NNUE 評価関数の学習ツール。CUDA カーネルを Rust から生成。bullet-shogi から発展。</p></article>
+    <article class="card" id="card-nnuelab"><h3><a href="https://nnue-lab.sh11235.com/t/sh11235">nnue-lab</a></h3>
+      <span class="repo"><a href="https://nnue-lab.sh11235.com/t/sh11235">nnue-lab.sh11235.com/t/sh11235</a></span>
+      <p>学習実験の記録・可視化 Web アプリ。loss カーブの重ね描き比較、lineage 連結、NNUE・エンジンバイナリの管理。</p></article>
+    <article class="card" id="card-bullet"><h3><a href="https://github.com/SH11235/bullet-shogi">bullet-shogi</a></h3>
+      <span class="repo"><a href="https://github.com/SH11235/bullet-shogi">SH11235/bullet-shogi</a></span>
+      <p>NNUE 学習ライブラリ bullet の将棋特化 fork。tatara の前身で、現在は tatara への移行を推奨。</p></article>
+  </div>
+</section>
+
+<footer>© SH11235 — <a href="https://github.com/SH11235/sh11235.com">このページのソース</a></footer>
+
+</body>
+</html>
