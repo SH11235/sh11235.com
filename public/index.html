@@ -91,7 +91,12 @@
   .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 34px; }
   @media (max-width: 900px) { .cards { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 600px) { .cards { grid-template-columns: 1fr; } }
-  .card h3 { font-family: var(--mincho); font-size: 18px; letter-spacing: .1em; }
+  .card h3 { font-family: var(--mincho); font-size: 18px; letter-spacing: .1em; display: flex; align-items: center; gap: 10px; }
+  .cico { width: 22px; height: 22px; flex: none; }
+  .cico .ln { stroke: var(--ink); stroke-width: 1.3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .cico .sh { stroke: var(--shu); stroke-width: 1.3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .cico .dt { fill: var(--ink); }
+  .cico .sf { fill: var(--shu); }
   .card h3 a { text-decoration: none; }
   .card h3 a:hover { color: var(--shu); }
   .card .repo { font-family: var(--mono); font-size: 11px; color: var(--mute); display: block; margin: 3px 0 9px; }
@@ -185,22 +190,22 @@
 <section class="apps" id="apps">
   <h2>作っているもの</h2>
   <div class="cards">
-    <article class="card" id="card-engine"><h3><a href="https://github.com/SH11235/rshogi">rshogi</a></h3>
+    <article class="card" id="card-engine"><h3><svg class="cico" viewBox="0 0 24 24" aria-hidden="true"><path class="ln" d="M12 5 L7 12 M7 12 L5 19 M7 12 L10 19 M17 12 L15 19"/><path class="sh" d="M12 5 L17 12 L19 19"/><circle class="dt" cx="12" cy="5" r="1.4"/><circle class="dt" cx="7" cy="12" r="1.4"/><circle class="dt" cx="17" cy="12" r="1.4"/><circle class="dt" cx="5" cy="19" r="1.4"/><circle class="dt" cx="10" cy="19" r="1.4"/><circle class="dt" cx="15" cy="19" r="1.4"/><circle class="sf" cx="19" cy="19" r="1.6"/></svg><a href="https://github.com/SH11235/rshogi">rshogi</a></h3>
       <span class="repo"><a href="https://github.com/SH11235/rshogi">SH11235/rshogi</a></span>
       <p>Rust 製 USI 将棋エンジン。ビットボード、Alpha-Beta 探索、NNUE 評価関数、Lazy SMP。教師生成・定跡・分析用の CLI ツール 58 本を同梱。</p></article>
-    <article class="card" id="card-csa"><h3><a href="https://github.com/SH11235/rshogi/tree/main/crates">対局インフラ</a></h3>
+    <article class="card" id="card-csa"><h3><svg class="cico" viewBox="0 0 24 24" aria-hidden="true"><circle class="ln" cx="5" cy="12" r="2.3"/><circle class="ln" cx="19" cy="12" r="2.3"/><path class="ln" d="M7.5 12 L16.5 12"/><path class="sf" d="M12 10.3 L13.7 12 L12 13.7 L10.3 12 Z"/></svg><a href="https://github.com/SH11235/rshogi/tree/main/crates">対局インフラ</a></h3>
       <span class="repo"><a href="https://github.com/SH11235/rshogi/tree/main/crates">rshogi/crates/rshogi-csa-*</a></span>
       <p>CSA プロトコルのクライアント・サーバー実装。サーバーは Cloudflare Workers + R2 で稼働中。クライアントは自前サーバーにも floodgate にも接続できる。</p></article>
-    <article class="card" id="card-ramu"><h3><a href="https://ramu-shogi.sh11235.com/">ラム将棋</a></h3>
+    <article class="card" id="card-ramu"><h3><svg class="cico" viewBox="0 0 24 24" aria-hidden="true"><rect class="ln" x="4.5" y="7.5" width="15" height="12"/><path class="ln" d="M9.5 7.5 V19.5 M14.5 7.5 V19.5 M4.5 11.5 H19.5 M4.5 15.5 H19.5"/><path class="sf" d="M12 7.9 L13.5 8.75 L13.9 11 L10.1 11 L10.5 8.75 Z"/></svg><a href="https://ramu-shogi.sh11235.com/">ラム将棋</a></h3>
       <span class="repo"><a href="https://ramu-shogi.sh11235.com/">ramu-shogi.sh11235.com</a></span>
       <p>Web・デスクトップ将棋アプリ。rshogi を WASM で内蔵。CSA 対局の live 観戦ビューアー付き。</p></article>
-    <article class="card" id="card-tatara"><h3><a href="https://github.com/SH11235/tatara">tatara</a></h3>
+    <article class="card" id="card-tatara"><h3><svg class="cico" viewBox="0 0 24 24" aria-hidden="true"><path class="ln" d="M4 6 C9 6 10 10.6 12.6 11.6 M4 18 C9 18 10 13.4 12.6 12.4"/><path class="sh" d="M12.8 12 L20 12 M17.6 9.8 L20 12 L17.6 14.2"/></svg><a href="https://github.com/SH11235/tatara">tatara</a></h3>
       <span class="repo"><a href="https://github.com/SH11235/tatara">SH11235/tatara</a></span>
       <p>NNUE 評価関数の学習ツール。手で fusion した CUDA カーネルで爆速。bullet-shogi から発展。</p></article>
-    <article class="card" id="card-nnuelab"><h3><a href="https://nnue-lab.sh11235.com/t/sh11235">nnue-lab</a></h3>
+    <article class="card" id="card-nnuelab"><h3><svg class="cico" viewBox="0 0 24 24" aria-hidden="true"><path class="ln" d="M5 4.5 V19.5 H20.5"/><path class="ln" d="M6.5 7 L10 13 L13.5 10.5 L18.5 16"/><circle class="sf" cx="18.5" cy="16" r="1.7"/></svg><a href="https://nnue-lab.sh11235.com/t/sh11235">nnue-lab</a></h3>
       <span class="repo"><a href="https://nnue-lab.sh11235.com/t/sh11235">nnue-lab.sh11235.com/t/sh11235</a></span>
       <p>学習実験の記録・可視化 Web アプリ。loss カーブの重ね描き比較、lineage 連結、NNUE・エンジンバイナリの管理。</p></article>
-    <article class="card" id="card-bullet"><h3><a href="https://github.com/SH11235/bullet-shogi">bullet-shogi</a></h3>
+    <article class="card" id="card-bullet"><h3><svg class="cico" viewBox="0 0 24 24" aria-hidden="true"><circle class="ln" cx="6.8" cy="8.8" r="2.1"/><path class="ln" d="M4.9 18 L8.7 18 L7.8 11.8 L5.8 11.8 Z"/><path class="sh" d="M10.4 13 L13.4 13 M12.2 11.7 L13.6 13 L12.2 14.3"/><path class="ln" d="M17.6 8.4 L19.7 9.6 L20.3 17.6 L14.9 17.6 L15.5 9.6 Z"/></svg><a href="https://github.com/SH11235/bullet-shogi">bullet-shogi</a></h3>
       <span class="repo"><a href="https://github.com/SH11235/bullet-shogi">SH11235/bullet-shogi</a></span>
       <p>チェス用 NNUE 学習ライブラリ <a href="https://github.com/jw1912/bullet">bullet</a> の将棋特化 fork。tatara の前身で、現在は tatara への移行を推奨。</p></article>
   </div>
