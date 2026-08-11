@@ -1,0 +1,43 @@
+---
+import '../styles/global.css';
+interface Props {
+  title?: string;
+  description?: string;
+}
+const {
+  title = 'SH11235 — 将棋にまつわるソフトを全部作る',
+  description = '将棋エンジン rshogi、CSA 対局サーバー、将棋アプリ ラム将棋、NNUE 学習ツール tatara など、将棋にまつわるソフトウェアを Rust で自作しています。',
+} = Astro.props;
+---
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{title}</title>
+<meta name="description" content={description} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:type" content="website" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>&#x2617;</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600&family=IBM+Plex+Sans+JP:wght@400;500&family=IBM+Plex+Mono&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<header class="site">
+  <div class="mei"><a href="/">SH11235</a><small>shogi software</small></div>
+  <nav>
+    <a href="/#apps">アプリ</a>
+    <a href="/articles/">記事</a>
+    <a href="https://github.com/SH11235">GitHub</a>
+  </nav>
+</header>
+
+<slot />
+
+<footer>© SH11235 — <a href="https://github.com/SH11235/sh11235.com">このページのソース</a></footer>
+
+</body>
+</html>

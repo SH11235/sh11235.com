@@ -1,0 +1,363 @@
+---
+// ドリルダウン相関図。データ定義とスプリング遷移は script 内 (vanilla JS / SVG)。
+---
+<div class="dd">
+  <div class="crumb" id="crumb"></div>
+  <svg id="stage" viewBox="0 0 980 560" role="img" aria-label="ソフトウェア相関図: 全体 → rshogi crates → tools パイプライン">
+    <defs>
+      <marker id="tp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#26221C"></path></marker>
+      <marker id="tps" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#B33A2B"></path></marker>
+    </defs>
+  </svg>
+  <div class="pop" id="pop" role="dialog" aria-modal="false">
+    <button class="x" id="popX" aria-label="閉じる">✕</button>
+    <h4 id="popT"></h4>
+    <div class="sub" id="popS"></div>
+    <p id="popD"></p>
+    <a class="lk" id="popL" href="#" target="_blank" rel="noopener"></a>
+  </div>
+</div>
+
+<script>
+'use strict';
+const NS = 'http://www.w3.org/2000/svg';
+const svg = document.getElementById('stage');
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ── レベル定義 ─────────────────────────────────────────────
+// nodes: {id,x,y,t,m,lines,big,dim,cnr,exp} / exp = クリックで進む level index
+const LEVELS = [
+ // L0: 全体図
+ { name: '全体',
+   washes: [
+     { x:20, y:96, w:420, h:264, cls:'wash', label:'学習系統', lx:36, ly:124 },
+     { x:610, y:148, w:350, h:264, cls:'wash cool', label:'対局系統', lx:626, ly:176 },
+   ],
+   nodes: [
+     { id:'kyoshi', x:130, y:172, t:'教師生成', m:'rshogi tools' },
+     { id:'psv',    x:335, y:172, t:'PSV 加工', m:'dedup / shuffle' },
+     { id:'hyoka',  x:130, y:296, t:'実戦で評価', m:'selfplay / floodgate' },
+     { id:'tatara', x:335, y:296, t:'tatara', m:'NNUE 学習 / CUDA', info:'tatara' },
+     { id:'nnuelab',x:525, y:384, t:'nnue-lab', m:'実験の記録・可視化 / web', cnr:[ -75,-24,75,28 ], info:'nnuelab' },
+     { id:'rshogi', x:525, y:272, t:'rshogi', m:'USI engine', big:true, exp:1, cnr:[ -75,-32,75,28 ] },
+     { id:'csasrv', x:701, y:224, t:'csa-server', m:'CF Workers + R2', info:'csasrv' },
+     { id:'csacli', x:701, y:348, t:'csa-client', m:'USI ⇔ CSA', info:'csacli' },
+     { id:'ramu',   x:875, y:224, t:'ラム将棋', m:'web / desktop', info:'ramu' },
+     { id:'fg',     x:875, y:348, t:'floodgate', m:'外部対局場', info:'fg' },
+   ],
+   edges: [
+     { d:'M 178 168 L 285 168' }, { d:'M 335 184 L 335 276' },
+     { d:'M 382 290 C 425 282 445 276 462 270', cls:'shu' },
+     { d:'M 500 300 C 420 338 300 332 204 298' },
+     { d:'M 130 274 L 130 188' },
+     { d:'M 358 320 C 395 348 425 364 458 376' },
+     { d:'M 132 324 C 165 382 310 400 446 388' },
+     { d:'M 562 278 C 610 305 635 325 656 342' },
+     { d:'M 701 330 L 701 252' },
+     { d:'M 748 220 L 834 220' }, { d:'M 748 344 L 834 344' },
+   ],
+   labels: [
+     { x:232, y:158, s:'生棋譜' }, { x:368, y:232, s:'教師データ' },
+     { x:424, y:264, s:'NNUE', shu:true }, { x:408, y:344, s:'対局結果' },
+     { x:588, y:318, s:'USI' }, { x:664, y:294, s:'WebSocket' },
+     { x:790, y:210, s:'live' }, { x:790, y:334, s:'TCP' },
+   ] },
+
+ // L1: rshogi crates — rshogi-core を中心に置き、依存が中心へ集まる放射状
+ { name: 'rshogi', origin:'rshogi',
+   washes: [ { r:118, cx:430, cy:300, cls:'wash' } ],
+   nodes: [
+     { id:'bk1lv', x:64, y:36, t:'\u25c2 \u5168\u4f53', back:0 },
+     { id:'core',   x:430, y:300, t:'rshogi-core', m:'\u76e4\u9762\u30fb\u63a2\u7d22\u30fbNNUE \u63a8\u8ad6', big:true, cnr:[ -85,-32,85,28 ], info:'core' },
+     { id:'tools',  x:430, y:110, t:'tools', m:'CLI \u00d758', exp:2 },
+     { id:'usi',    x:170, y:200, t:'rshogi-usi', m:'USI \u30d7\u30ed\u30c8\u30b3\u30eb' , info:'usi' },
+     { id:'book',   x:150, y:390, t:'rshogi-book', m:'\u5b9a\u8de1' , info:'book' },
+     { id:'cli',    x:700, y:150, t:'csa-client', m:'\u5bfe\u5c40\u30af\u30e9\u30a4\u30a2\u30f3\u30c8' , info:'csacli' },
+     { id:'srv',    x:720, y:320, t:'csa-server', m:'\u30b5\u30fc\u30d0\u30fc\u5171\u901a\u90e8' , info:'csasrv' },
+     { id:'tcp',    x:900, y:230, t:'csa-server-tcp', m:'TCP \u30d5\u30ed\u30f3\u30c8' , info:'tcpfr' },
+     { id:'wrk',    x:900, y:410, t:'csa-server-workers', m:'CF Workers \u30d5\u30ed\u30f3\u30c8' , info:'wrkfr' },
+     { id:'csa',    x:700, y:490, t:'rshogi-csa', m:'CSA \u30d7\u30ed\u30c8\u30b3\u30eb' , info:'csaproto' },
+     { id:'xtask',  x:150, y:510, t:'xtask', m:'\u30d3\u30eb\u30c9\u30bf\u30b9\u30af', dim:true, info:'xtask' },
+   ],
+   edges: [
+     { d:'M 430 146 L 430 262' },
+     { d:'M 228 222 C 290 252 330 272 366 288' },
+     { d:'M 210 382 C 272 358 322 336 364 316' },
+     { d:'M 646 314 C 590 310 546 306 500 302' },
+     { d:'M 678 174 C 610 212 534 256 478 282' },
+     { d:'M 868 244 C 830 268 800 288 782 302' },
+     { d:'M 868 396 C 826 378 796 358 776 340' },
+     { d:'M 714 346 L 703 462' },
+     { d:'M 392 130 C 260 158 190 282 158 366', cls:'fnt' },
+     { d:'M 468 126 C 560 128 620 138 662 146', cls:'fnt' },
+   ],
+   labels: [] },
+
+ // L2: tools パイプライン
+ { name: 'tools', origin:'tools',
+   washes: [
+     { x:20, y:60, w:940, h:210, cls:'wash', label:'教師データパイプライン', lx:36, ly:88 },
+     { x:20, y:290, w:650, h:110, cls:'wash cool', label:'定跡 (book_*)', lx:36, ly:318 },
+   ],
+   nodes: [
+     { id:'bk2lv', x:70, y:32, t:'\u25c2 rshogi', back:1 },
+     { id:'gen',  x:110, y:150, t:'生成', m:'', lines:['gensfen','nyugyoku_gensfen'] },
+     { id:'lab',  x:330, y:150, t:'リスコア', m:'', lines:['rescore_psv / relabel_psv','yardstick_label → score'] },
+     { id:'kako', x:560, y:150, t:'加工', m:'', lines:['psv_dedup ×3 / shuffle','filter / preprocess / validate'] },
+     { id:'henk', x:790, y:150, t:'変換', m:'', lines:['pack_to_psv / hcpe_to_psv','psv_to_hcpe3 / jsonl'] },
+     { id:'bk1', x:100, y:352, t:'from_csa', m:'CSA→.db' },
+     { id:'bk2', x:270, y:352, t:'rescore', m:'ラベル付与' },
+     { id:'bk3', x:440, y:352, t:'extend', m:'候補展開' },
+     { id:'bk4', x:610, y:352, t:'backprop', m:'negamax 逆伝播' },
+     { id:'taik', x:180, y:480, t:'対局・評価', m:'', lines:['tournament → analyze_selfplay','jsonl_to_psv で教師へ還流'] },
+     { id:'spsa', x:480, y:480, t:'SPSA', m:'', lines:['generate_spsa_params → spsa','param_diff / plot_csv'] },
+     { id:'kens', x:790, y:480, t:'検証・ベンチ ×13', m:'', lines:['benchmark / search_only_ab','compare_nodes / ek_testset …'] },
+     { id:'texit', x:915, y:74, t:'tatara', m:'学習ツールへ', exit:true, info:'tatara' },
+   ],
+   edges: [
+     { d:'M 178 146 L 262 146' }, { d:'M 400 146 L 490 146' }, { d:'M 630 146 L 718 146' },
+     { d:'M 858 140 C 890 130 900 110 908 96', cls:'shu' },
+     { d:'M 155 348 L 215 348' }, { d:'M 328 348 L 388 348' }, { d:'M 498 348 L 558 348' },
+   ],
+   labels: [] },
+];
+
+// ── 描画 ─────────────────────────────────────────────────
+const el = (tag, attrs, parent) => {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  parent.appendChild(e); return e;
+};
+const levelGs = LEVELS.map((L, li) => {
+  const g = el('g', { class: 'level' }, svg);           // 全体 (scale/fade 用)
+  const aux = el('g', { class: 'aux' }, g);             // wash / edge / label
+  for (const w of L.washes || []) {
+    if (w.r) el('circle', { class: w.cls, cx: w.cx, cy: w.cy, r: w.r }, aux);
+    else el('rect', { class: w.cls, x: w.x, y: w.y, width: w.w, height: w.h }, aux);
+    if (w.label) { const t = el('text', { class: 'grpl', x: w.lx, y: w.ly }, aux); t.textContent = w.label; }
+  }
+  for (const e2 of L.edges || []) el('path', { class: 'ar' + (e2.cls ? ' ' + e2.cls : ''), d: e2.d }, aux);
+  for (const lb of L.labels || []) {
+    const t = el('text', { class: 'al', x: lb.x, y: lb.y }, aux);
+    if (lb.shu) t.setAttribute('style', 'fill:#B33A2B');
+    t.textContent = lb.s;
+  }
+  const ndsG = el('g', {}, g);
+  const nds = (L.nodes || []).map(n => {
+    const ng = el('g', { class: 'nd' + (n.big ? ' big' : '') + (n.dim ? ' dim' : '') + (n.exp != null ? ' exp' : '') + (n.info ? ' info' : '') + (n.exit ? ' exit' : '') + (n.back != null ? ' exp backnd' : '') }, ndsG);
+    const lineH = (n.lines || []).length;
+    const act = n.exp != null || n.info || n.back != null;
+    const hw = act ? 85 : 80, hh = (act ? 64 : 44) + lineH * 15;
+    el('rect', { class: 'hit', x: -hw, y: -28, width: hw * 2, height: hh }, ng);
+    if (n.cnr) {
+      const [x1, y1, x2, y2] = n.cnr;
+      el('path', { class: 'cnr', d: `M${x1} ${y1+11} L${x1} ${y1} L${x1+11} ${y1} M${x2-11} ${y1} L${x2} ${y1} L${x2} ${y1+11} M${x2} ${y2-11} L${x2} ${y2} L${x2-11} ${y2} M${x1+11} ${y2} L${x1} ${y2} L${x1} ${y2-11}` }, ng);
+    }
+    const t = el('text', { class: 't', y: 0 }, ng);
+    t.textContent = n.t;
+    if (n.exp != null) { const c = document.createElementNS(NS, 'tspan'); c.setAttribute('class', 'chev'); c.setAttribute('dx', '6'); c.textContent = '▸'; t.appendChild(c); }
+    else if (n.info) { const c = document.createElementNS(NS, 'tspan'); c.setAttribute('class', 'plus'); c.setAttribute('dx', '6'); c.textContent = '＋'; t.appendChild(c); }
+    if (n.m) { const m = el('text', { class: 'm', y: 20 }, ng); m.textContent = n.m; }
+    (n.lines || []).forEach((s, i) => { const li = el('text', { class: 'li', y: 22 + i * 15 }, ng); li.textContent = s; });
+    if (n.exp != null || n.info || n.back != null) {
+      ng.setAttribute('tabindex', 0); ng.setAttribute('role', 'button');
+      const go = e4 => {
+        e4 && e4.stopPropagation();
+        if (n.back != null) nav(n.back, null);
+        else if (n.exp != null) nav(n.exp, { x: n.x, y: n.y });
+        else showPop(n);
+      };
+      ng.addEventListener('click', go);
+      ng.addEventListener('keydown', e3 => { if (e3.key === 'Enter' || e3.key === ' ') { e3.preventDefault(); go(); } });
+    }
+    return { n, ng };
+  });
+  return { L, g, aux, nds };
+});
+
+// ── スプリング (臨界減衰、現在値+速度から常に retarget 可能) ──
+const springs = [];
+function mkSpring(v, response) {
+  const s = { v, vel: 0, t: v, w: 2 * Math.PI / response };
+  springs.push(s); return s;
+}
+function stepSprings(dt) {
+  for (const s of springs) {
+    if (reduced) { s.v = s.t; s.vel = 0; continue; }
+    const a = -2 * s.w * s.vel - s.w * s.w * (s.v - s.t);
+    s.vel += a * dt; s.v += s.vel * dt;
+    if (Math.abs(s.v - s.t) < 1e-3 && Math.abs(s.vel) < 1e-3) { s.v = s.t; s.vel = 0; }
+  }
+}
+
+// レベルごとの駆動値: zoom (1=通常, 1.55=奥へ抜けた), fade, ノード progress
+const drv = levelGs.map((lg, li) => ({
+  zoom: mkSpring(1, .55),
+  fade: mkSpring(li === 0 ? 1 : 0, .4),
+  nodeP: lg.nds.map(() => mkSpring(li === 0 ? 1 : 0, .38)),
+  auxO: mkSpring(li === 0 ? 1 : 0, .45),
+  origin: { x: 490, y: 280 },
+}));
+
+let cur = 0;
+let pendingStagger = [];  // {spring, at}
+
+// ── 概要 popover ─────────────────────────────────────────
+const INFO = {
+  tatara:  { t:'tatara', s:'github.com/SH11235/tatara',
+             d:'NNUE 評価関数の学習ツール。手で fusion した CUDA カーネルで爆速。bullet-shogi から発展。',
+             url:'https://github.com/SH11235/tatara' },
+  nnuelab: { t:'nnue-lab', s:'nnue-lab.sh11235.com/t/sh11235',
+             d:'学習実験の記録・可視化 Web アプリ。loss カーブの重ね描き比較、lineage 連結、NNUE・エンジンバイナリの管理。',
+             url:'https://nnue-lab.sh11235.com/t/sh11235' },
+  ramu:    { t:'ラム将棋', s:'ramu-shogi.sh11235.com',
+             d:'Web・デスクトップ将棋アプリ。rshogi を WASM で内蔵。CSA 対局の live 観戦ビューアー付き。',
+             url:'https://ramu-shogi.sh11235.com/' },
+  csasrv:  { t:'csa-server', s:'rshogi/crates/rshogi-csa-server-*',
+             d:'CSA プロトコルの対局サーバー。本番は Cloudflare Workers + R2 で稼働中。TCP 版フロントもある。',
+             url:'https://github.com/SH11235/rshogi/tree/main/crates/rshogi-csa-server' },
+  csacli:  { t:'csa-client', s:'rshogi/crates/rshogi-csa-client',
+             d:'CSA 対局クライアント。USI エンジンを CSA プロトコルへ橋渡しし、自前サーバーにも floodgate にも接続できる。',
+             url:'https://github.com/SH11235/rshogi/tree/main/crates/rshogi-csa-client' },
+  xtask:   { t:'xtask', s:'rshogi/crates/xtask',
+             d:'ビルドタスク集。cargo xtask build --edition で、HalfKP / LayerStack など NNUE アーキテクチャ別の推論 edition バイナリをビルドする。preset は rshogi-core の Cargo.toml に edition-* feature として定義。',
+             url:'https://github.com/SH11235/rshogi/blob/main/crates/xtask/src/main.rs' },
+  usi:     { t:'rshogi-usi', s:'rshogi/crates/rshogi-usi',
+             d:'USI (Universal Shogi Interface) プロトコルの実装。GUI や対局ツールとエンジンをつなぐ入出力層。',
+             url:'https://github.com/SH11235/rshogi/tree/main/crates/rshogi-usi' },
+  book:    { t:'rshogi-book', s:'rshogi/crates/rshogi-book',
+             d:'定跡データベースの読み書きと参照。book_* ツール群が作った定跡を engine が対局で引く。',
+             url:'https://github.com/SH11235/rshogi/tree/main/crates/rshogi-book' },
+  tcpfr:   { t:'csa-server-tcp', s:'rshogi/crates/rshogi-csa-server-tcp',
+             d:'csa-server の TCP フロントエンド。ローカルや自前サーバーで CSA 対局場を立てるときの実行形。',
+             url:'https://github.com/SH11235/rshogi/tree/main/crates/rshogi-csa-server-tcp' },
+  wrkfr:   { t:'csa-server-workers', s:'rshogi/crates/rshogi-csa-server-workers',
+             d:'csa-server の Cloudflare Workers フロントエンド。本番の対局サーバーとして稼働し、棋譜を R2 に保存する。',
+             url:'https://github.com/SH11235/rshogi/tree/main/crates/rshogi-csa-server-workers' },
+  csaproto:{ t:'rshogi-csa', s:'rshogi/crates/rshogi-csa',
+             d:'CSA プロトコル (対局通信規約) のコア実装。csa-client と csa-server の両方がこれを共有する。',
+             url:'https://github.com/SH11235/rshogi/tree/main/crates/rshogi-csa' },
+  core:    { t:'rshogi-core', s:'rshogi/crates/rshogi-core',
+             d:'エンジン本体。ビットボードの盤面表現、Alpha-Beta 探索、NNUE 評価関数の推論、置換表、Lazy SMP をこの crate が担う。',
+             url:'https://github.com/SH11235/rshogi/tree/main/crates/rshogi-core' },
+  fg:      { t:'floodgate', s:'wdoor.c.u-tokyo.ac.jp',
+             d:'外部のコンピュータ将棋レーティング対局場。rshogi は csa-client 経由で参加する。',
+             url:'http://wdoor.c.u-tokyo.ac.jp/shogi/floodgate.html' },
+};
+const pop = document.getElementById('pop');
+let popOpen = false;
+function showPop(n) {
+  const inf = INFO[n.info]; if (!inf) return;
+  document.getElementById('popT').textContent = inf.t;
+  document.getElementById('popS').textContent = inf.s;
+  document.getElementById('popD').textContent = inf.d;
+  const lk = document.getElementById('popL');
+  lk.textContent = inf.url.replace(/^https?:\/\//, '') + ' ↗';
+  lk.href = inf.url;
+  // クリック元の画面座標に錨止め (右側のノードは左に開く)
+  const r = svg.getBoundingClientRect(), wrapR = svg.parentElement.getBoundingClientRect();
+  const sx = r.left - wrapR.left + n.x / 980 * r.width;
+  const sy = r.top - wrapR.top + n.y / 560 * r.height;
+  const left = n.x > 560;
+  pop.style.left = (left ? sx - 316 : sx + 22) + 'px';
+  pop.style.top = Math.max(8, sy - 40) + 'px';
+  pop.style.transformOrigin = left ? '100% 22%' : '0% 22%';
+  pop.classList.add('on');
+  pop.style.transition = reduced ? 'none' : 'opacity .22s ease-out, transform .3s cubic-bezier(.2,1.1,.3,1)';
+  pop.style.opacity = 1; pop.style.transform = 'scale(1)';
+  popOpen = true;
+}
+function hidePop() {
+  if (!popOpen) return;
+  pop.classList.remove('on');
+  pop.style.opacity = 0; pop.style.transform = 'scale(.62)';
+  popOpen = false;
+}
+document.getElementById('popX').addEventListener('click', hidePop);
+document.addEventListener('click', e5 => { if (popOpen && !pop.contains(e5.target)) hidePop(); });
+document.addEventListener('keydown', e6 => { if (e6.key !== 'Escape') return; if (popOpen) hidePop(); else if (cur > 0) nav(cur - 1, null); });
+pop.addEventListener('click', e7 => e7.stopPropagation());
+
+function nav(target, originPt) {
+  if (target === cur) return;
+  hidePop();
+  const down = target > cur;                       // 深く潜る方向か
+  const now = performance.now();
+  pendingStagger = [];
+  for (let li = 0; li < LEVELS.length; li++) {
+    const d = drv[li];
+    if (li === target) {
+      if (originPt) d.origin = originPt;
+      d.fade.t = 1; d.auxO.t = 1; d.zoom.t = 1;
+      const ranks = LEVELS[li].nodes
+        .map((n2, i) => ({ i, dd: Math.hypot(n2.x - d.origin.x, n2.y - d.origin.y) }))
+        .sort((a, b) => a.dd - b.dd);
+      ranks.forEach(({ i }, rank) => {
+        const s = d.nodeP[i];
+        if (reduced) { s.t = 1; return; }
+        pendingStagger.push({ spring: s, at: now + rank * 26, to: 1 });
+      });
+    } else {
+      d.fade.t = 0; d.auxO.t = 0;
+      // 空間的整合: 潜るなら手前へ抜け (拡大)、戻るなら奥へ縮む
+      d.zoom.t = li < target ? 1.55 : .62;
+      d.nodeP.forEach(s => { s.t = li > target ? 0 : s.t; });
+    }
+  }
+  cur = target;
+  renderCrumb();
+  const hash = ['', '#rshogi', '#rshogi-tools'][target];
+  if (location.hash !== hash) history.pushState(null, '', hash || location.pathname.split('#')[0]);
+}
+
+addEventListener('popstate', () => {
+  const h = location.hash;
+  nav(h === '#rshogi-tools' ? 2 : h === '#rshogi' ? 1 : 0, null);
+});
+
+// ── フレームループ ──
+let last = performance.now();
+function frame(t) {
+  const dt = Math.min(.05, (t - last) / 1000); last = t;
+  for (const p of pendingStagger) if (t >= p.at && p.spring.t !== p.to) p.spring.t = p.to;
+  pendingStagger = pendingStagger.filter(p => p.spring.t !== p.to || Math.abs(p.spring.v - p.to) > 1e-3);
+  stepSprings(dt);
+  for (let li = 0; li < levelGs.length; li++) {
+    const lg = levelGs[li], d = drv[li];
+    const vis = d.fade.v > .005;
+    lg.g.style.display = vis ? '' : 'none';
+    if (!vis) continue;
+    lg.g.style.opacity = Math.max(0, Math.min(1, d.fade.v));
+    const z = d.zoom.v, o = d.origin;
+    lg.g.setAttribute('transform', `translate(${o.x * (1 - z)},${o.y * (1 - z)}) scale(${z})`);
+    lg.g.style.pointerEvents = (li === cur && d.fade.v > .35) ? '' : 'none';
+    lg.aux.style.opacity = Math.max(0, Math.min(1, d.auxO.v));
+    lg.nds.forEach(({ n, ng }, i) => {
+      const p = d.nodeP[i].v;
+      const x = o.x + (n.x - o.x) * p, y = o.y + (n.y - o.y) * p;
+      const sc = .55 + .45 * p;
+      ng.setAttribute('transform', `translate(${x},${y}) scale(${sc})`);
+      ng.style.opacity = Math.max(0, Math.min(1, p));
+    });
+  }
+  requestAnimationFrame(frame);
+}
+
+// ── パンくず ──
+const crumbEl = document.getElementById('crumb');
+function renderCrumb() {
+  const names = ['全体', 'rshogi', 'tools'];
+  let html = '';
+  for (let i = 0; i <= (cur === 0 ? 0 : cur); i++) {
+    if (i > 0) html += '<span class="sep">›</span>';
+    html += i === cur ? `<span class="cur">${names[i]}</span>` : `<a data-lv="${i}">${names[i]}</a>`;
+  }
+  crumbEl.innerHTML = cur === 0 ? '<span class="cur">全体</span>' : html;
+  crumbEl.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nav(+a.dataset.lv, null)));
+}
+
+renderCrumb();
+if (location.hash === '#rshogi') nav(1, null);
+else if (location.hash === '#rshogi-tools') nav(2, null);
+requestAnimationFrame(frame);
+</script>

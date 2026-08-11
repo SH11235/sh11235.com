@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const articles = (await getCollection('articles')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const fmt = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+---
+<Base title="記事 — SH11235" description="将棋ソフトウェア開発の記事一覧">
+  <div class="alist">
+    <h1>記事</h1>
+    {articles.length === 0 && <p class="empty">記事はまだありません。</p>}
+    <ul>
+      {articles.map((a) => (
+        <li>
+          <span class="d">{fmt(a.data.date)}</span>
+          <a href={`/articles/${a.id}/`}>{a.data.title}</a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</Base>
