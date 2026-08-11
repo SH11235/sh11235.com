@@ -76,6 +76,13 @@ header.site .mei {
 header.site .mei a {
   text-decoration: none;
 }
+header.site .mei h1 {
+  display: inline;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  margin-left: 18px;
+}
 header.site .mei small {
   font-family: var(--mono);
   font-size: 10.5px;
@@ -110,23 +117,8 @@ header.site nav a:active {
   z-index: 1;
   max-width: 1150px;
   margin: 0 auto;
-  padding: 34px 44px 70px;
+  padding: 8px 44px 28px;
   text-align: center;
-}
-.stage-inner h1 {
-  font-family: var(--mincho);
-  font-size: clamp(1.8rem, 4.2vw, 2.6rem);
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  line-height: 1.4;
-  text-wrap: balance;
-}
-.stage-inner p.lead {
-  font-size: 0.875rem;
-  letter-spacing: 0;
-  max-width: 32em;
-  margin: 14px auto 0;
-  color: #45403a;
 }
 
 /* ── 作っているもの ── */
@@ -367,7 +359,7 @@ footer a:hover {
 .dd {
   position: relative;
   max-width: 1000px;
-  margin: 10px auto 0;
+  margin: 6px auto 0;
   text-align: left;
 }
 .dd svg {
@@ -376,11 +368,15 @@ footer a:hover {
   height: auto;
 }
 .crumb {
-  margin: 4px 0;
+  /* 図の viewBox 左上は全レベルで空くため、行を占有せず svg に重ねる。
+     top を負にして stage の余白帯へ逃がし、図との間隔を確保する */
+  position: absolute;
+  top: -12px;
+  left: 4px;
+  z-index: 2;
   font-family: var(--mincho);
   font-size: 14px;
   letter-spacing: 0.08em;
-  min-height: 1.6em;
 }
 .crumb a {
   color: var(--mute);
@@ -415,13 +411,14 @@ footer a:hover {
   fill: #57524a;
 }
 .ar {
-  stroke: var(--ink);
-  stroke-width: 1.2;
+  stroke: #6f695f;
+  stroke-width: 1.05;
   fill: none;
   marker-end: url(#tp);
 }
 .ar.shu {
   stroke: var(--shu);
+  stroke-width: 1.3;
   marker-end: url(#tps);
 }
 .ar.fnt {
@@ -433,6 +430,15 @@ footer a:hover {
   font-size: 9.5px;
   fill: var(--mute);
   text-anchor: middle;
+}
+/* 線がテキストの下を通っても文字側が勝つよう、背景色の縁取りで抜く */
+.nd text,
+.al,
+.grpl {
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 5px;
+  stroke-linejoin: round;
 }
 
 .nd {

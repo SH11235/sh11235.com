@@ -3,10 +3,12 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
+  headline?: string;
 }
 const {
   title = 'SH11235 — 将棋にまつわるソフトを全部作る',
   description = '将棋エンジン rshogi、CSA 対局サーバー、将棋アプリ ラム将棋、NNUE 学習ツール tatara など、将棋にまつわるソフトウェアを Rust で自作しています。',
+  headline,
 } = Astro.props;
 ---
 <!doctype html>
@@ -27,7 +29,7 @@ const {
 <body>
 
 <header class="site">
-  <div class="mei"><a href="/">SH11235</a><small>shogi software</small></div>
+  <div class="mei"><a href="/">SH11235</a>{headline ? <h1>{headline}</h1> : <small>shogi software</small>}</div>
   <nav>
     <a href="/shogi/">将棋ソフト</a>
     <a href="/articles/">記事</a>

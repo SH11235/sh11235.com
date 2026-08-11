@@ -3,10 +3,10 @@
 ---
 <div class="dd">
   <div class="crumb" id="crumb"></div>
-  <svg id="stage" viewBox="0 0 980 560" role="img" aria-label="ソフトウェア相関図: 全体 → rshogi crates → tools パイプライン">
+  <svg id="stage" viewBox="0 30 980 470" role="img" aria-label="ソフトウェア相関図: 全体 → rshogi crates → tools パイプライン">
     <defs>
-      <marker id="tp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#26221C"></path></marker>
-      <marker id="tps" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#B33A2B"></path></marker>
+      <marker id="tp" viewBox="0 0 10 10" refX="7.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M2 1.5 L8 5 L2 8.5" fill="none" stroke="#6f695f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></marker>
+      <marker id="tps" viewBox="0 0 10 10" refX="7.5" refY="5" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse"><path d="M2 1.5 L8 5 L2 8.5" fill="none" stroke="#B33A2B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></marker>
     </defs>
   </svg>
   <div class="pop" id="pop" role="dialog" aria-modal="false">
@@ -67,7 +67,6 @@ const LEVELS = [
  { name: 'rshogi', origin:'rshogi',
    washes: [ { r:118, cx:430, cy:300, cls:'wash' } ],
    nodes: [
-     { id:'bk1lv', x:64, y:36, t:'\u25c2 \u5168\u4f53', back:0 },
      { id:'core',   x:430, y:300, t:'rshogi-core', m:'\u76e4\u9762\u30fb\u63a2\u7d22\u30fbNNUE \u63a8\u8ad6', big:true, cnr:[ -85,-32,85,28 ], info:'core' },
      { id:'tools',  x:430, y:110, t:'tools', m:'CLI \u00d758', exp:2 },
      { id:'usi',    x:170, y:200, t:'rshogi-usi', m:'USI \u30d7\u30ed\u30c8\u30b3\u30eb' , info:'usi' },
@@ -76,8 +75,8 @@ const LEVELS = [
      { id:'srv',    x:720, y:320, t:'csa-server', m:'\u30b5\u30fc\u30d0\u30fc\u5171\u901a\u90e8' , info:'csasrv' },
      { id:'tcp',    x:900, y:230, t:'csa-server-tcp', m:'TCP \u30d5\u30ed\u30f3\u30c8' , info:'tcpfr' },
      { id:'wrk',    x:900, y:410, t:'csa-server-workers', m:'CF Workers \u30d5\u30ed\u30f3\u30c8' , info:'wrkfr' },
-     { id:'csa',    x:700, y:490, t:'rshogi-csa', m:'CSA \u30d7\u30ed\u30c8\u30b3\u30eb' , info:'csaproto' },
-     { id:'xtask',  x:150, y:510, t:'xtask', m:'\u30d3\u30eb\u30c9\u30bf\u30b9\u30af', dim:true, info:'xtask' },
+     { id:'csa',    x:700, y:460, t:'rshogi-csa', m:'CSA \u30d7\u30ed\u30c8\u30b3\u30eb' , info:'csaproto' },
+     { id:'xtask',  x:150, y:460, t:'xtask', m:'\u30d3\u30eb\u30c9\u30bf\u30b9\u30af', dim:true, info:'xtask' },
    ],
    edges: [
      { d:'M 430 146 L 430 262' },
@@ -100,7 +99,6 @@ const LEVELS = [
      { x:20, y:290, w:650, h:110, cls:'wash cool', label:'定跡 (book_*)', lx:36, ly:318 },
    ],
    nodes: [
-     { id:'bk2lv', x:70, y:32, t:'\u25c2 rshogi', back:1 },
      { id:'gen',  x:110, y:150, t:'生成', m:'', lines:['gensfen','nyugyoku_gensfen'] },
      { id:'lab',  x:330, y:150, t:'リスコア', m:'', lines:['rescore_psv / relabel_psv','yardstick_label → score'] },
      { id:'kako', x:560, y:150, t:'加工', m:'', lines:['psv_dedup ×3 / shuffle','filter / preprocess / validate'] },
@@ -109,9 +107,9 @@ const LEVELS = [
      { id:'bk2', x:270, y:352, t:'rescore', m:'ラベル付与' },
      { id:'bk3', x:440, y:352, t:'extend', m:'候補展開' },
      { id:'bk4', x:610, y:352, t:'backprop', m:'negamax 逆伝播' },
-     { id:'taik', x:180, y:480, t:'対局・評価', m:'', lines:['tournament → analyze_selfplay','jsonl_to_psv で教師へ還流'] },
-     { id:'spsa', x:480, y:480, t:'SPSA', m:'', lines:['generate_spsa_params → spsa','param_diff / plot_csv'] },
-     { id:'kens', x:790, y:480, t:'検証・ベンチ ×13', m:'', lines:['benchmark / search_only_ab','compare_nodes / ek_testset …'] },
+     { id:'taik', x:180, y:455, t:'対局・評価', m:'', lines:['tournament → analyze_selfplay','jsonl_to_psv で教師へ還流'] },
+     { id:'spsa', x:480, y:455, t:'SPSA', m:'', lines:['generate_spsa_params → spsa','param_diff / plot_csv'] },
+     { id:'kens', x:790, y:455, t:'検証・ベンチ ×13', m:'', lines:['benchmark / search_only_ab','compare_nodes / ek_testset …'] },
      { id:'texit', x:915, y:74, t:'tatara', m:'学習ツールへ', exit:true, info:'tatara' },
    ],
    edges: [
@@ -136,7 +134,7 @@ const levelGs = LEVELS.map((L, li) => {
     else el('rect', { class: w.cls, x: w.x, y: w.y, width: w.w, height: w.h }, aux);
     if (w.label) { const t = el('text', { class: 'grpl', x: w.lx, y: w.ly }, aux); t.textContent = w.label; }
   }
-  for (const e2 of L.edges || []) el('path', { class: 'ar' + (e2.cls ? ' ' + e2.cls : ''), d: e2.d }, aux);
+  const eps = (L.edges || []).map(e2 => el('path', { class: 'ar' + (e2.cls ? ' ' + e2.cls : ''), d: e2.d }, aux));
   for (const lb of L.labels || []) {
     const t = el('text', { class: 'al', x: lb.x, y: lb.y }, aux);
     if (lb.shu) t.setAttribute('style', 'fill:#B33A2B');
@@ -172,8 +170,59 @@ const levelGs = LEVELS.map((L, li) => {
     }
     return { n, ng };
   });
-  return { L, g, aux, nds };
+  return { L, g, aux, nds, eps };
 });
+
+// ── エッジのトリム ───────────────────────────────────────
+// 手打ちのエッジ座標はノードのテキスト量を知らないため、描画後に各エッジの
+// 両端をノードテキスト bbox (+pad) の外へ機械的に切り詰めて文字被りを防ぐ。
+// パスを 2px 間隔でサンプリングし polyline として再構成する (曲線もそのまま通る)。
+function trimEdges() {
+  const PAD = 6;
+  for (const lg of levelGs) {
+    const prevDisp = lg.g.style.display;
+    lg.g.style.display = '';                       // display:none だと getBBox が 0 になる
+    const boxes = [];
+    for (const { n, ng } of lg.nds) {
+      let b = null;
+      for (const t of ng.querySelectorAll('text')) {
+        const bb = t.getBBox();
+        if (!bb.width && !bb.height) continue;
+        b = b
+          ? [Math.min(b[0], bb.x), Math.min(b[1], bb.y), Math.max(b[2], bb.x + bb.width), Math.max(b[3], bb.y + bb.height)]
+          : [bb.x, bb.y, bb.x + bb.width, bb.y + bb.height];
+      }
+      // コーナー囲い (cnr) はテキストより外に出るので clearance に含める
+      if (n.cnr) {
+        const [cx1, cy1, cx2, cy2] = n.cnr;
+        b = b
+          ? [Math.min(b[0], cx1), Math.min(b[1], cy1), Math.max(b[2], cx2), Math.max(b[3], cy2)]
+          : [cx1, cy1, cx2, cy2];
+      }
+      // text は node-local 座標 (transform 非依存) なので n.x/n.y を足す
+      if (b) boxes.push([n.x + b[0] - PAD, n.y + b[1] - PAD, n.x + b[2] + PAD, n.y + b[3] + PAD]);
+    }
+    const inside = (x, y) => boxes.some(b => x > b[0] && x < b[2] && y > b[1] && y < b[3]);
+    for (const p of lg.eps) {
+      if (!p.dataset.d0) p.dataset.d0 = p.getAttribute('d');
+      p.setAttribute('d', p.dataset.d0);           // font 読み込み後の再トリムに備え原型から
+      const len = p.getTotalLength();
+      if (!len) continue;
+      const nSeg = Math.max(2, Math.ceil(len / 2));
+      const pts = [];
+      for (let i = 0; i <= nSeg; i++) { const q = p.getPointAtLength(len * i / nSeg); pts.push([q.x, q.y]); }
+      let a = 0, b = pts.length - 1;
+      while (a < b && inside(pts[a][0], pts[a][1])) a++;
+      while (b > a && inside(pts[b][0], pts[b][1])) b--;
+      if (b - a < 3) continue;                     // ほぼ丸ごと箱内なら手を付けない
+      p.setAttribute('d', 'M' + pts.slice(a, b + 1).map(q => q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join('L'));
+    }
+    lg.g.style.display = prevDisp;
+  }
+}
+trimEdges();
+// webfont 適用でテキスト幅が変わるため確定後にもう一度
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(trimEdges);
 
 // ── スプリング (臨界減衰、現在値+速度から常に retarget 可能) ──
 const springs = [];
@@ -196,7 +245,7 @@ const drv = levelGs.map((lg, li) => ({
   fade: mkSpring(li === 0 ? 1 : 0, .4),
   nodeP: lg.nds.map(() => mkSpring(li === 0 ? 1 : 0, .38)),
   auxO: mkSpring(li === 0 ? 1 : 0, .45),
-  origin: { x: 490, y: 280 },
+  origin: { x: 490, y: 250 },
 }));
 
 let cur = 0;
@@ -257,7 +306,7 @@ function showPop(n) {
   // クリック元の画面座標に錨止め (右側のノードは左に開く)
   const r = svg.getBoundingClientRect(), wrapR = svg.parentElement.getBoundingClientRect();
   const sx = r.left - wrapR.left + n.x / 980 * r.width;
-  const sy = r.top - wrapR.top + n.y / 560 * r.height;
+  const sy = r.top - wrapR.top + (n.y - 30) / 470 * r.height;
   const left = n.x > 560;
   pop.style.left = (left ? sx - 316 : sx + 22) + 'px';
   pop.style.top = Math.max(8, sy - 40) + 'px';
@@ -352,7 +401,7 @@ function renderCrumb() {
     if (i > 0) html += '<span class="sep">›</span>';
     html += i === cur ? `<span class="cur">${names[i]}</span>` : `<a data-lv="${i}">${names[i]}</a>`;
   }
-  crumbEl.innerHTML = cur === 0 ? '<span class="cur">全体</span>' : html;
+  crumbEl.innerHTML = cur === 0 ? '' : html;
   crumbEl.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nav(+a.dataset.lv, null)));
 }
 
