@@ -101,27 +101,33 @@ header.site nav a {
   transition: color 0.12s ease-out;
 }
 @media (max-width: 720px) {
+  /* 1 行目: ロゴ + ナビ、2 行目: ページタイトル全幅 */
   header.site {
     padding: 12px 20px;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    row-gap: 2px;
+    align-items: baseline;
   }
   header.site .mei {
-    display: flex;
-    flex-direction: column;
+    display: contents;
     font-size: 17px;
   }
-  header.site .mei h1 {
+  header.site .mei h1,
+  header.site .mei small {
+    grid-column: 1 / -1;
+    grid-row: 2;
     margin-left: 0;
+  }
+  header.site .mei h1 {
     font-size: 12px;
     white-space: nowrap;
   }
-  header.site .mei small {
-    margin-left: 0;
-  }
   header.site nav {
+    grid-column: 2;
+    grid-row: 1;
     display: flex;
     column-gap: 14px;
-    padding-top: 3px;
     font-size: 12.5px;
   }
   header.site nav a {
@@ -559,6 +565,25 @@ footer a:hover {
 }
 
 /* 概要 popover (クリック元に錨止め) */
+.pop.sheet {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  width: auto;
+  max-height: 60svh;
+  overflow-y: auto;
+}
+@media (max-width: 720px) {
+  /* 図はモバイルでは横パン (縮めると文字が読めないため) */
+  .ddscroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .ddscroll svg {
+    min-width: 640px;
+  }
+}
 .pop {
   position: absolute;
   z-index: 10;
