@@ -97,7 +97,39 @@ header.site nav {
 header.site nav a {
   text-decoration: none;
   margin-left: 22px;
+  white-space: nowrap;
   transition: color 0.12s ease-out;
+}
+@media (max-width: 720px) {
+  header.site {
+    padding: 12px 20px;
+    align-items: flex-start;
+  }
+  header.site .mei {
+    display: flex;
+    flex-direction: column;
+    font-size: 17px;
+  }
+  header.site .mei h1 {
+    margin-left: 0;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  header.site .mei small {
+    margin-left: 0;
+  }
+  header.site nav {
+    display: flex;
+    column-gap: 14px;
+    padding-top: 3px;
+    font-size: 12.5px;
+  }
+  header.site nav a {
+    margin-left: 0;
+  }
+  .stage-inner {
+    padding: 8px 14px 24px;
+  }
 }
 header.site nav a:hover,
 header.site nav a:focus-visible {
