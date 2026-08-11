@@ -162,7 +162,7 @@ const levelGs = LEVELS.map((L, li) => {
     if (n.exp != null || n.info || n.back != null) {
       ng.setAttribute('tabindex', 0); ng.setAttribute('role', 'button');
       const go = e4 => {
-        e4 && e4.stopPropagation();
+        if (e4) e4.stopPropagation();
         if (n.back != null) nav(n.back, null);
         else if (n.exp != null) nav(n.exp, { x: n.x, y: n.y });
         else showPop(n);
