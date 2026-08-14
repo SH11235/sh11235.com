@@ -11,6 +11,9 @@ importers:
       astro:
         specifier: ^7.2.0
         version: 7.2.0(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)
+      sharp:
+        specifier: ^0.35.3
+        version: 0.35.3
       vite-plus:
         specifier: ^0.2.8
         version: 0.2.8(esbuild@0.28.2)(vite@8.2.1(esbuild@0.28.2))
@@ -4488,7 +4491,6 @@ snapshots:
       '@img/sharp-win32-arm64': 0.35.3
       '@img/sharp-win32-ia32': 0.35.3
       '@img/sharp-win32-x64': 0.35.3
-    optional: true
 
   shiki@4.4.3:
     dependencies:

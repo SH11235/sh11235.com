@@ -249,11 +249,130 @@ section.apps h2 {
   color: var(--shu);
 }
 
-/* ── 記事 ── */
+/* ── 記事 ──
+   ワイド画面では .article-wrap の grid で本文 (720px) の右に目次 (.toc) トラックを確保。
+   画像はカラム幅で表示し、クリックで原寸拡大 (#lightbox) */
+.article-wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 1100px) {
+  .article-wrap {
+    grid-template-columns: minmax(0, 720px) 220px;
+    justify-content: center;
+    column-gap: 32px;
+  }
+}
 .prose {
   max-width: 720px;
+  width: 100%;
   margin: 0 auto;
   padding: 30px 44px 80px;
+}
+.prose :is(h2, h3, h4) {
+  scroll-margin-top: 84px;
+}
+.toc {
+  display: none;
+}
+@media (min-width: 1100px) {
+  .toc {
+    display: block;
+  }
+}
+.toc-inner {
+  position: sticky;
+  top: 60px;
+  max-height: calc(100vh - 90px);
+  overflow-y: auto;
+  padding: 34px 12px 20px 0;
+}
+.toc-title {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--mute);
+  margin-bottom: 10px;
+}
+.toc ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-left: 1px solid var(--faint);
+}
+.toc li a {
+  display: block;
+  padding: 4px 0 4px 12px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--mute);
+  text-decoration: none;
+}
+.toc li.d3 a {
+  padding-left: 24px;
+}
+.toc li.d4 a {
+  padding-left: 36px;
+  font-size: 12px;
+}
+.toc li a:hover {
+  color: var(--shu);
+}
+.backlink {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  color: var(--mute);
+  text-decoration: none;
+  margin-bottom: 14px;
+}
+.backlink:hover {
+  color: var(--shu);
+}
+.article-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  margin-top: 48px;
+  padding-top: 18px;
+  border-top: 1px solid var(--faint);
+  font-size: 13px;
+}
+.article-nav a {
+  color: var(--mute);
+  text-decoration: none;
+}
+.article-nav a:hover {
+  color: var(--shu);
+}
+.prose p > img:only-child {
+  cursor: zoom-in;
+}
+#lightbox {
+  /* reset の `* { margin: 0 }` が UA の dialog 中央寄せ (margin: auto) を潰すため明示 */
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: fit-content;
+  height: fit-content;
+  border: none;
+  padding: 0;
+  background: transparent;
+  max-width: 96vw;
+  max-height: 96vh;
+}
+#lightbox::backdrop {
+  background: rgba(20, 17, 14, 0.82);
+}
+#lightbox img {
+  display: block;
+  max-width: 96vw;
+  max-height: 92vh;
+  width: auto;
+  height: auto;
+  cursor: zoom-out;
 }
 .prose h1 {
   font-family: var(--mincho);
@@ -272,18 +391,18 @@ section.apps h2 {
   font-family: var(--mincho);
   font-size: 20px;
   letter-spacing: 0.08em;
-  margin: 36px 0 12px;
+  margin-block: 36px 12px;
   border-bottom: 1px solid var(--faint);
   padding-bottom: 8px;
 }
 .prose h3 {
   font-family: var(--mincho);
   font-size: 16.5px;
-  margin: 26px 0 8px;
+  margin-block: 26px 8px;
 }
 .prose p {
   font-size: 14.5px;
-  margin: 12px 0;
+  margin-block: 12px;
 }
 .prose ul,
 .prose ol {
@@ -304,7 +423,7 @@ section.apps h2 {
   overflow-x: auto;
   font-size: 12.5px;
   line-height: 1.7;
-  margin: 14px 0;
+  margin-block: 14px;
 }
 .prose pre code {
   background: none;
@@ -317,12 +436,12 @@ section.apps h2 {
   border-left: 3px solid var(--wood);
   padding-left: 14px;
   color: #57524a;
-  margin: 14px 0;
+  margin-block: 14px;
 }
 .prose table {
   border-collapse: collapse;
   font-size: 13.5px;
-  margin: 14px 0;
+  margin-block: 14px;
   display: block;
   overflow-x: auto;
 }

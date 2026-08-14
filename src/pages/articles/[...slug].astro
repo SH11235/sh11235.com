@@ -3,19 +3,61 @@ import Base from '../../layouts/Base.astro';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
-  const articles = await getCollection('articles');
-  return articles.map((a) => ({ params: { slug: a.id }, props: { article: a } }));
+  const articles = (await getCollection('articles')).sort(
+    (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+  );
+  return articles.map((a, i) => ({
+    params: { slug: a.id },
+    props: { article: a, newer: articles[i - 1] ?? null, older: articles[i + 1] ?? null },
+  }));
 }
 
-const { article } = Astro.props;
-const { Content } = await render(article);
+const { article, newer, older } = Astro.props;
+const { Content, headings } = await render(article);
+const toc = headings.filter((h) => h.depth >= 2 && h.depth <= 4);
 const d = article.data.date;
 const fmt = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 ---
 <Base title={`${article.data.title} — SH11235`} description={article.data.description ?? article.data.title}>
-  <article class="prose">
-    <h1>{article.data.title}</h1>
-    <div class="meta">{fmt}</div>
-    <Content />
-  </article>
+  <div class="article-wrap">
+    <article class="prose">
+      <a class="backlink" href="/articles/">← 記事一覧</a>
+      <h1>{article.data.title}</h1>
+      <div class="meta">{fmt}</div>
+      <Content />
+      <nav class="article-nav">
+        {older ? <a href={`/articles/${older.id}/`}>← {older.data.title}</a> : <span />}
+        <a href="/articles/">記事一覧へ戻る</a>
+        {newer ? <a href={`/articles/${newer.id}/`}>{newer.data.title} →</a> : <span />}
+      </nav>
+    </article>
+    {toc.length > 0 && (
+      <nav class="toc" aria-label="目次">
+        <div class="toc-inner">
+          <div class="toc-title">目次</div>
+          <ul>
+            {toc.map((h) => (
+              <li class={`d${h.depth}`}><a href={`#${h.slug}`}>{h.text}</a></li>
+            ))}
+          </ul>
+        </div>
+      </nav>
+    )}
+  </div>
+  <dialog id="lightbox"><img alt="" /></dialog>
+  <script>
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = lightbox?.querySelector('img');
+    if (lightbox instanceof HTMLDialogElement && lightboxImg) {
+      for (const img of document.querySelectorAll('.prose p > img:only-child')) {
+        if (!(img instanceof HTMLImageElement)) continue;
+        img.addEventListener('click', () => {
+          lightboxImg.src = img.src;
+          lightboxImg.alt = img.alt;
+          lightbox.showModal();
+        });
+      }
+      lightbox.addEventListener('click', () => lightbox.close());
+    }
+  </script>
 </Base>
