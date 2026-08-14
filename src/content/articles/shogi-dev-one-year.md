@@ -17,10 +17,10 @@ description: 約 1 年の将棋関連ソフトウェア開発の振り返りと�
 （NNUE系）将棋AIを動かすには将棋エンジン（YaneuraOu）、評価関数（水匠5、AobaNNUE）、対局・検討用のGUI（ShogiHome）など複数の要素が必要です。
 これら全部を自前で用意するべく
 
-- 将棋エンジンとしてはrshogi
-- 評価関数トレーナーとしてtatara
-- GUI（webアプリ）としてラム将棋
-- 実験管理アプリとして nnue-lab
+- 将棋エンジンとしては[rshogi](https://github.com/SH11235/rshogi)
+- 評価関数トレーナーとして[tatara](https://github.com/SH11235/tatara)
+- GUI（webアプリ）として[ラム将棋](https://ramu-shogi.sh11235.com/)
+- 実験管理アプリとして [nnue-lab](https://nnue-lab.sh11235.com/)
 
 を作ってきました。
 
