@@ -59,5 +59,35 @@ const fmt = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${S
       }
       lightbox.addEventListener('click', () => lightbox.close());
     }
+
+    // コードブロックのコピーボタン。pre 自体は横スクロールするため、ボタンは
+    // pre を包む wrapper に絶対配置してスクロールに追従させない。
+    for (const pre of document.querySelectorAll('.prose pre')) {
+      const code = pre.querySelector('code');
+      if (!code) continue;
+      const wrap = document.createElement('div');
+      wrap.className = 'code-block';
+      pre.replaceWith(wrap);
+      wrap.appendChild(pre);
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'copy-btn';
+      btn.textContent = 'コピー';
+      btn.setAttribute('aria-label', 'コードをコピー');
+      btn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(code.innerText.replace(/\n$/, ''));
+          btn.textContent = 'コピーしました';
+        } catch {
+          btn.textContent = 'コピー失敗';
+        }
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'コピー';
+          btn.classList.remove('copied');
+        }, 1500);
+      });
+      wrap.appendChild(btn);
+    }
   </script>
 </Base>
