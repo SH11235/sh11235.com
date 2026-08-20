@@ -1,12 +1,13 @@
 ---
 title: nnue-lab に API token と remote MCP を追加した
 date: 2026-08-18
-description: NNUE 実験管理アプリ nnue-lab に、CLI / AI agent 向けの API token・公開ガイド・remote MCP server を追加しました
+description: NNUE 実験管理アプリ nnue-lab に、公開 API と API token・公開ガイド・remote MCP server を追加しました
 ---
 
-自作の NNUE 実験管理アプリ [nnue-lab](https://nnue-lab.sh11235.com/) に、ブラウザを使わずにデータを出し入れするための機能を 3 つ追加しました。
+自作の NNUE 実験管理アプリ [nnue-lab](https://nnue-lab.sh11235.com/) のデータを、ブラウザを使わずに出し入れできるようにしました。追加したのは次の 4 つです。
 
-- **API token (personal access token)**: アカウントページから発行できる長期 credential
+- **公開 API**: 実験の一覧・取得・アップロード・メタデータ更新ができる HTTP API
+- **API token (personal access token)**: 上の API を認証するための credential。アカウントページから発行できる
 - **公開ガイド**: [https://nnue-lab.sh11235.com/developers/skill.md](https://nnue-lab.sh11235.com/developers/skill.md) — curl 例つきの手順書で、AI agent にそのまま読ませて使える形式
 - **remote MCP server**: `https://nnue-lab.sh11235.com/mcp` — Claude Code や Codex から実験データを直接参照できる
 
