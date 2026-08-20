@@ -4,18 +4,26 @@ date: 2026-08-18
 description: NNUE 実験管理アプリ nnue-lab に、公開 API と API token・公開ガイド・remote MCP server を追加しました
 ---
 
-自作の NNUE 実験管理アプリ [nnue-lab](https://nnue-lab.sh11235.com/) のデータを、ブラウザを使わずに出し入れできるようにしました。追加したのは次の 4 つです。
+自作の NNUE 実験管理アプリ [nnue-lab](https://nnue-lab.sh11235.com/) のデータを、ブラウザを使わずに出し入れできるようにしました。
+追加したのは次の 4 つです。
 
 - **公開 API**: 実験の一覧・取得・アップロード・メタデータ更新ができる HTTP API
 - **API token (personal access token)**: 上の API を認証するための credential。アカウントページから発行できる
 - **公開ガイド**: [https://nnue-lab.sh11235.com/developers/skill.md](https://nnue-lab.sh11235.com/developers/skill.md) — curl 例つきの手順書で、AI agent にそのまま読ませて使える形式
 - **remote MCP server**: `https://nnue-lab.sh11235.com/mcp` — Claude Code や Codex から実験データを直接参照できる
 
-（user: 一言・動機など）
+CLIから作業が完結するようになるため、この機能を使えば実験の管理をCoding Agentに任せて、学習終了後の実験データアップロードやメモの編集を自動で行わせる事が出来ます。
+全データを remote （nnue-lab）に置いておくと、複数マシンを使う場合にも過去実験の参照が簡単になります。
+元々自分専用では使っていたのですが、このリリースをもって他の nnue-lab ユーザーにも開放されます。
+管理画面操作をLLMにやらせたくなるのは今時の常識（？）ですね。
 
-## 土台は「token があれば curl で叩ける API」
+## 公開 API と 2 つの利用経路
 
-仕組みとしてはシンプルで、土台は **`Authorization: Bearer nlab_...` を付ければ curl だけで叩ける HTTP API** です。実験の一覧・取得・アップロード・メタデータ更新まで全部できます。
+公開APIでは実験の一覧取得・詳細取得・アップロード・メタデータ更新が出来ます（自分のデータもしくは公開されている実験のみが対象なので別テナントデータを操作できるわけではありません）。
+
+利用経路は 2 つあります。1 つ目は **HTTP を直接叩く経路**で、curl を手で打っても、スクリプトに書いても、AI agent にやらせても構いません。skill.md はこの経路の手順書で、agent に読ませるとそのまま使えます。2 つ目は **MCP** で、agent が型付き tool を直接呼びます。
+
+まずは 1 つ目の経路の最小例です。
 
 ```bash
 export NNUE_LAB_TOKEN="nlab_..."
@@ -24,13 +32,15 @@ curl -H "Authorization: Bearer ${NNUE_LAB_TOKEN}" \
   "https://nnue-lab.sh11235.com/api/tenants/<tenant>/experiments"
 ```
 
-なお、この記事の curl 例は bash 構文です。Windows では WSL や Git Bash でそのまま使えます。PowerShell で実行する場合は次の 3 点を読み替えてください。
+この記事の例は curl で書きますが、ただの HTTP API なので client は何でも構いません (Postman のような GUI client でも叩けます)。Coding Agent に使わせるならコマンドで完結する curl が自然です。
+
+なお curl 例は bash 構文です。Windows では WSL や Git Bash でそのまま使えます。PowerShell で実行する場合は次の 3 点を読み替えてください。
 
 - `curl`: PowerShell 7 ではそのまま Windows 同梱の curl が動きます。Windows PowerShell 5.1 では別コマンドの別名になっているため `curl.exe` と書きます
-- `${NNUE_LAB_TOKEN}`: `$env:NNUE_LAB_TOKEN` に読み替えます。PowerShell の `${...}` は環境変数ではなく PowerShell 変数の参照なので、環境変数に保存した token はそのままでは読めず、**空の `Authorization: Bearer ` が送られて 401 になります** (エラーにならないので気づきにくい失敗です)
+- `${NNUE_LAB_TOKEN}`: `$env:NNUE_LAB_TOKEN` に読み替えます。
 - 行末の `\` (行継続): `` ` `` に読み替えるか、1 行で書きます
 
-公開ガイド (skill.md) と MCP はその上の「使いやすくする層」で、どちらも任意です。
+skill.md と MCP について補足します。どちらも使うかどうかは任意です。
 
 - **skill.md** はただの markdown 手順書です。AI agent に読ませると、agent が curl を組み立てて API を叩けるようになります。主要 endpoint の curl 例をカバーします
 - **MCP** はプロトコル統合で、agent が型付き tool を直接呼びます。実験の一覧・詳細・学習履歴の取得、複数実験の比較、lineage (継続学習の親子関係) の取得と、メタデータの更新ができます
@@ -42,6 +52,8 @@ curl -H "Authorization: Bearer ${NNUE_LAB_TOKEN}" \
 ログイン後のアカウントページに API tokens セクションがあります。名前・スコープ (読み取り / 書き込み)・テナント制限 (任意)・有効日数 (任意、1〜365 日) を指定して発行します。
 
 ![API token の発行フォーム](./images/nnue-lab-token-form.jpg)
+
+テナント制限は基本は空 (指定なし) で問題ありません。指定すると、その token は指定 tenant の API しか叩けなくなります。漏洩したときに効く範囲を絞るための保険で、チーム利用でチームテナントと個人テナントを使い分けているような場合に有効です。逆に、他のユーザーの公開実験 (例: 私の sh11235 tenant) を API や MCP から参照したい token は制限を空にしておいてください。
 
 発行すると平文の token が **一度だけ** 表示されます。この画面を閉じると再表示できないので、その場でコピーして保存します。この記事のコマンドはすべて環境変数 `NNUE_LAB_TOKEN` から token を読む前提なので、OS ごとに次の場所に置いておくのが楽です。
 
@@ -57,11 +69,9 @@ Windows では PowerShell で一度実行すれば、ユーザー環境変数と
 [Environment]::SetEnvironmentVariable("NNUE_LAB_TOKEN", "nlab_...", "User")
 ```
 
-GUI 派なら「システムのプロパティ → 環境変数 → ユーザー環境変数」に `NNUE_LAB_TOKEN` を追加するのでも同じです。OS の再起動は不要ですが、起動済みのターミナルには反映されないので、ターミナルアプリを開き直してください (Windows Terminal は新規タブでは反映されず、アプリごと開き直す必要があります)。なお WSL 内で使う場合は Windows 側ではなく WSL 側の `~/.bashrc` に書きます。
+GUI から設定するなら「システムのプロパティ → 環境変数 → ユーザー環境変数」に `NNUE_LAB_TOKEN` を追加するのでも同じです。OS の再起動は不要ですが、起動済みのターミナルには反映されないので、ターミナルアプリを開き直してください (Windows Terminal は新規タブでは反映されず、アプリごと開き直す必要があります)。
 
-この環境変数の手間を省きたい場合、MCP だけ使うなら後述のとおり **user scope の MCP 登録に token を直接書く**方法もあります (登録先はローカルの設定ファイルで、repo には載りません)。
-
-token を書いたファイル (`.bashrc` 等) やその内容を repo にコミットしないことにだけ注意してください。漏らした場合はアカウントページから失効すればその瞬間に使えなくなります。
+後述しますが、MCP だけ使うならMCPサーバー登録時の設定だけすれば、環境変数の設定は省くことが出来ます。
 
 ![発行直後の一度きり表示](./images/nnue-lab-token-created.jpg)
 
@@ -103,7 +113,7 @@ MCP で接続すると、agent に「先週の実験と loss を比較して」�
 
 ### Claude Code のセットアップ
 
-user scope (自分の全プロジェクトで使う):
+user scope (自分の全プロジェクトで使う) で登録します。
 
 ```bash
 claude mcp add --scope user --transport http nnue-lab \
@@ -112,16 +122,6 @@ claude mcp add --scope user --transport http nnue-lab \
 ```
 
 user scope の登録先はローカルのユーザー設定ファイルなので、環境変数を用意せず `Bearer nlab_...` と **token を直接書いてしまっても問題ありません** (Windows で環境変数の設定が面倒な場合はこちらが楽です)。
-
-project scope (repo にコミットしてチームで共有する):
-
-```bash
-claude mcp add --scope project --transport http nnue-lab \
-  https://nnue-lab.sh11235.com/mcp \
-  --header 'Authorization: Bearer ${NNUE_LAB_TOKEN}'
-```
-
-project scope は repo 直下の `.mcp.json` に書き込まれるので、**single quote で `${NNUE_LAB_TOKEN}` を展開させずに登録する**のが重要です。`.mcp.json` は読み込み時に環境変数を展開するため、各メンバーは自分の token を環境変数に置くだけで済み、token が repo に載りません。
 
 MCP の代わりに skill.md を使う場合は、SKILL として保存するだけです。
 
@@ -139,11 +139,9 @@ curl.exe -o "$HOME\.claude\skills\use-nnue-lab-api\SKILL.md" `
   https://nnue-lab.sh11235.com/developers/skill.md
 ```
 
-(project 単位なら `.claude/skills/use-nnue-lab-api/SKILL.md` に同様)
-
 ### Codex のセットアップ
 
-user scope (`~/.codex/config.toml` に登録):
+`~/.codex/config.toml` に登録されます。
 
 ```bash
 codex mcp add nnue-lab \
@@ -157,14 +155,6 @@ codex mcp add nnue-lab \
 [mcp_servers.nnue-lab]
 url = "https://nnue-lab.sh11235.com/mcp"
 http_headers = { Authorization = "Bearer nlab_..." }
-```
-
-project scope は repo 直下の `.codex/config.toml` に同じ内容を書きます (trusted project でのみ読み込まれます)。token 本体ではなく環境変数名を書く形式なので、そのままコミットできます。
-
-```toml
-[mcp_servers.nnue-lab]
-url = "https://nnue-lab.sh11235.com/mcp"
-bearer_token_env_var = "NNUE_LAB_TOKEN"
 ```
 
 skill.md を使う場合は、repo の `.agents/skills/use-nnue-lab-api/SKILL.md` として保存すると Codex が project skill として読み込みます。
