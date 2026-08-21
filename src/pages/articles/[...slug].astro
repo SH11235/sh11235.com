@@ -18,7 +18,12 @@ const toc = headings.filter((h) => h.depth >= 2 && h.depth <= 4);
 const d = article.data.date;
 const fmt = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 ---
-<Base title={`${article.data.title} — SH11235`} description={article.data.description ?? article.data.title}>
+<Base
+  title={`${article.data.title} — SH11235`}
+  description={article.data.description ?? article.data.title}
+  image={article.data.ogImage}
+  ogType="article"
+>
   <div class="article-wrap">
     <article class="prose">
       <a class="backlink" href="/articles/">← 記事一覧</a>

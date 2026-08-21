@@ -2,6 +2,7 @@
 title: nnue-lab に API token と remote MCP を追加した
 date: 2026-08-22
 description: NNUE 実験管理アプリ nnue-lab に、公開 API と API token・公開ガイド・remote MCP server を追加しました
+ogImage: /images/nnue-lab-developer-api-og.png
 ---
 
 自作の NNUE 実験管理アプリ [nnue-lab](https://nnue-lab.sh11235.com/) のデータを、ブラウザを使わずに出し入れできるようにしました。
