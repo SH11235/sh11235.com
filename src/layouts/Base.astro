@@ -37,6 +37,7 @@ const imageUrl = image ? new URL(image, Astro.site ?? Astro.url.origin).href : u
 <meta name="twitter:description" content={description} />
 {imageUrl && <meta name="twitter:image" content={imageUrl} />}
 {imageUrl && <meta name="twitter:image:alt" content={title} />}
+<link rel="alternate" type="application/rss+xml" title="SH11235 RSS" href="/rss.xml" />
 <link rel="canonical" href={canonicalUrl} />
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
@@ -58,7 +59,7 @@ const imageUrl = image ? new URL(image, Astro.site ?? Astro.url.origin).href : u
 
 <slot />
 
-<footer>© SH11235 — <a href="https://github.com/SH11235/sh11235.com">このページのソース</a></footer>
+<footer>© SH11235 — <a href="https://github.com/SH11235/sh11235.com">このページのソース</a> · <a href="/rss.xml">RSS</a></footer>
 
 </body>
 </html>

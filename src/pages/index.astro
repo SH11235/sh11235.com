@@ -27,7 +27,7 @@ import Base from '../layouts/Base.astro';
 </Base>
 
 <style>
-  .home { max-width: 720px; margin: 0 auto; padding: 72px 44px 90px; text-align: center; }
+  .home { max-width: 720px; margin: 0 auto; padding: 72px clamp(20px, 5.5vw, 44px) 90px; text-align: center; }
   .home h1 { font-family: var(--mincho); font-size: clamp(2rem, 5vw, 2.8rem); font-weight: 600; letter-spacing: .14em; }
   .home .lead { font-size: .9rem; color: #45403A; margin-top: 14px; }
   .doors { margin-top: 48px; display: grid; gap: 16px; text-align: left; }
