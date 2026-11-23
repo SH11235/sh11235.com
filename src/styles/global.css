@@ -9,8 +9,8 @@
   --sans:
     "IBM Plex Sans JP", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", "Yu Gothic", sans-serif;
   --mono:
-    "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, "IBM Plex Sans JP",
-    "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", "Yu Gothic", monospace;
+    "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono",
+    "IBM Plex Sans JP", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", "Yu Gothic", monospace;
 }
 * {
   margin: 0;
@@ -274,6 +274,10 @@ section.apps h2 {
   width: 100%;
   margin: 0 auto;
   padding: 30px clamp(20px, 5.5vw, 44px) 80px;
+}
+/* 表は列を縮めて折るより、横スクロールで数値や識別子を保つ */
+.prose :is(th, td) {
+  overflow-wrap: normal;
 }
 .prose :is(h2, h3, h4) {
   scroll-margin-top: 84px;
