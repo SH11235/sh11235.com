@@ -496,6 +496,17 @@ section.apps h2 {
   color: #57524a;
   margin-block: 14px;
 }
+.prose blockquote.twitter-tweet {
+  width: fit-content;
+  margin-inline: auto;
+}
+.prose .youtube-embed {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin-block: 14px;
+  border: 0;
+}
 .prose table {
   border-collapse: collapse;
   font-size: 13.5px;
