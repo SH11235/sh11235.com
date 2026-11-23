@@ -11,7 +11,7 @@
     </defs>
   </svg>
   </div>
-  <div class="pop" id="pop" role="dialog" aria-modal="false">
+  <div class="pop" id="pop" inert role="dialog" aria-modal="false">
     <button class="x" id="popX" aria-label="閉じる">✕</button>
     <h4 id="popT"></h4>
     <div class="sub" id="popS"></div>
@@ -321,13 +321,14 @@ function showPop(n) {
     pop.style.top = Math.max(8, sy - 40) + 'px';
     pop.style.transformOrigin = left ? '100% 22%' : '0% 22%';
   }
+  pop.inert = false;
   pop.classList.add('on');
-  pop.style.transition = reduced ? 'none' : 'opacity .22s ease-out, transform .3s cubic-bezier(.2,1.1,.3,1)';
   pop.style.opacity = 1; pop.style.transform = 'scale(1)';
   popOpen = true;
 }
 function hidePop() {
   if (!popOpen) return;
+  pop.inert = true;
   pop.classList.remove('on');
   pop.style.opacity = 0; pop.style.transform = 'scale(.62)';
   popOpen = false;
@@ -409,10 +410,10 @@ function renderCrumb() {
   let html = '';
   for (let i = 0; i <= (cur === 0 ? 0 : cur); i++) {
     if (i > 0) html += '<span class="sep">›</span>';
-    html += i === cur ? `<span class="cur">${names[i]}</span>` : `<a data-lv="${i}">${names[i]}</a>`;
+    html += i === cur ? `<span class="cur">${names[i]}</span>` : `<button type="button" data-lv="${i}">${names[i]}</button>`;
   }
   crumbEl.innerHTML = cur === 0 ? '' : html;
-  crumbEl.querySelectorAll('a').forEach(a => a.addEventListener('click', () => nav(+a.dataset.lv, null)));
+  crumbEl.querySelectorAll('button').forEach(button => button.addEventListener('click', () => nav(+button.dataset.lv, null)));
 }
 
 renderCrumb();

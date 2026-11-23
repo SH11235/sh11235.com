@@ -3,12 +3,14 @@
   --ink: #26221c;
   --wood: #c9a25e;
   --shu: #b33a2b;
-  --mute: #8a857c;
+  --mute: #6b665e;
   --faint: rgba(38, 34, 28, 0.14);
   --mincho: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif CJK JP", serif;
   --sans:
     "IBM Plex Sans JP", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", "Yu Gothic", sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --mono:
+    "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono",
+    "IBM Plex Sans JP", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", "Yu Gothic", monospace;
 }
 * {
   margin: 0;
@@ -133,9 +135,6 @@ header.site nav a {
   header.site nav a {
     margin-left: 0;
   }
-  .stage-inner {
-    padding: 8px 14px 24px;
-  }
 }
 header.site nav a:hover,
 header.site nav a:focus-visible {
@@ -155,15 +154,21 @@ header.site nav a:active {
   z-index: 1;
   max-width: 1150px;
   margin: 0 auto;
-  padding: 8px 44px 28px;
+  padding: 8px clamp(20px, 5.5vw, 44px) 28px;
   text-align: center;
+}
+
+@media (max-width: 720px) {
+  .stage-inner {
+    padding-bottom: 24px;
+  }
 }
 
 /* ── 作っているもの ── */
 section.apps {
   max-width: 1150px;
   margin: 26px auto 0;
-  padding: 0 44px 70px;
+  padding: 0 clamp(20px, 5.5vw, 44px) 70px;
 }
 section.apps h2 {
   font-family: var(--mincho);
@@ -264,10 +269,15 @@ section.apps h2 {
   }
 }
 .prose {
+  overflow-wrap: anywhere;
   max-width: 720px;
   width: 100%;
   margin: 0 auto;
-  padding: 30px 44px 80px;
+  padding: 30px clamp(20px, 5.5vw, 44px) 80px;
+}
+/* 表は列を縮めて折るより、横スクロールで数値や識別子を保つ */
+.prose :is(th, td) {
+  overflow-wrap: normal;
 }
 .prose :is(h2, h3, h4) {
   scroll-margin-top: 84px;
@@ -400,6 +410,14 @@ section.apps h2 {
   font-size: 16.5px;
   margin-block: 26px 8px;
 }
+.prose h4 {
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: #5c564d;
+  margin: 28px 0 6px;
+}
 .prose p {
   font-size: 14.5px;
   margin-block: 12px;
@@ -502,7 +520,7 @@ section.apps h2 {
 .alist {
   max-width: 720px;
   margin: 0 auto;
-  padding: 30px 44px 80px;
+  padding: 30px clamp(20px, 5.5vw, 44px) 80px;
 }
 .alist h1 {
   font-family: var(--mincho);
@@ -575,16 +593,23 @@ footer a:hover {
   font-size: 14px;
   letter-spacing: 0.08em;
 }
-.crumb a {
+.crumb button {
   color: var(--mute);
-  text-decoration: none;
+  background: none;
+  border: 0;
+  font: inherit;
+  letter-spacing: inherit;
   cursor: pointer;
   display: inline-block;
   padding: 8px 6px;
   margin: -8px -6px;
 }
-.crumb a:hover {
+.crumb button:hover {
   color: var(--shu);
+}
+.crumb button:focus-visible {
+  outline: 2px solid var(--shu);
+  outline-offset: 3px;
 }
 .crumb .sep {
   color: var(--faint);
@@ -754,9 +779,16 @@ footer a:hover {
   opacity: 0;
   transform: scale(0.62);
   pointer-events: none;
+  visibility: hidden;
+  transition:
+    opacity 0.22s ease-out,
+    transform 0.3s cubic-bezier(0.2, 1.1, 0.3, 1),
+    visibility 0s 0.3s;
 }
 .pop.on {
   pointer-events: auto;
+  visibility: visible;
+  transition-delay: 0s;
 }
 .pop h4 {
   font-family: var(--mincho);
@@ -799,4 +831,11 @@ footer a:hover {
 }
 .pop .x:hover {
   color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pop,
+  .pop.on {
+    transition: none;
+  }
 }

@@ -15,6 +15,8 @@
     "lint:fix": "vp lint --fix"
   },
   "devDependencies": {
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.6",
     "astro": "^7.2.0",
     "sharp": "^0.35.3",
     "vite-plus": "^0.2.8",
