@@ -30,7 +30,10 @@ function parseStart(value) {
 
 function youtubeEmbed(url) {
   let id;
-  if (url.hostname === "www.youtube.com" && url.pathname === "/watch") {
+  if (
+    ["www.youtube.com", "youtube.com", "m.youtube.com"].includes(url.hostname) &&
+    url.pathname === "/watch"
+  ) {
     id = url.searchParams.get("v");
   } else if (url.hostname === "youtu.be") {
     id = url.pathname.slice(1);
@@ -40,7 +43,7 @@ function youtubeEmbed(url) {
   const start =
     parseStart(url.searchParams.get("start") ?? "") ?? parseStart(url.searchParams.get("t") ?? "");
   const src = `https://www.youtube-nocookie.com/embed/${id}${start === undefined ? "" : `?start=${start}`}`;
-  return `<iframe class="youtube-embed" src="${src}" loading="lazy" title="YouTube 動画プレーヤー" allowfullscreen></iframe>`;
+  return `<iframe class="youtube-embed" src="${src}" loading="lazy" title="YouTube 動画プレーヤー" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
 }
 
 function hasWidgetsScript(node) {
@@ -58,6 +61,8 @@ export function urlEmbeds(articlesDir) {
     name: "url-embeds",
     paragraph(node, ctx) {
       if (!ctx.fileURL?.href.startsWith(articlesDir.href)) return;
+      // 箇条書き・引用・脚注の参考リンクまで埋め込みの列にしないよう、本文直下の段落だけを対象にする。
+      if (ctx.parent(node)?.type !== "root") return;
 
       const url = getStandaloneUrl(node);
       if (!url) return;
