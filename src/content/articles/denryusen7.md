@@ -370,9 +370,9 @@ https://x.com/naginagisasub/status/2122179231522422854
 | [「RAMU DR7」評価関数 3 種セット（RAMU mini・RAMU・RAMU big / FT 1536・2304・3072）](https://sh11235.booth.pm/items/9207955?utm_source=sh11235.com&utm_medium=blog&utm_campaign=denryusen7) | 9,800円 | 大きさ違いの評価関数 3 つ（FT 1536・2304・3072）と、それぞれのエンジン。2304 は上と同じもの                                                                                                       |
 | [将棋AI「COCO」評価関数・エンジン（無料）](https://sh11235.booth.pm/items/9207970?utm_source=sh11235.com&utm_medium=blog&utm_campaign=denryusen7)                                           | 無料    | 評価関数（halfkp_256x2-32-32）とエンジン。評価関数はやねうら王の NNUE 版でも FV_SCALE を 14 にして使えます。有料の 2 つと同じエンジンなので、お使いの PC でどの版が動くかを購入前に確かめられます |
 
-- RAMU DR7 の評価関数は LayerStacks・HalfKA_hm の形で、やねうら王の通常の NNUE 版では読み込めません。そのため、エンジン（rshogi。Windows 64bit 版と Linux x86_64 版の、それぞれ AVX2 版・AVX-512 版・AVX-512 VNNI 版）を同梱しています。
+- 評価関数を動かすエンジン（rshogi。Windows 64bit 版と Linux x86_64 版の、それぞれ AVX2 版・AVX-512 版・AVX-512 VNNI 版）を同梱しています。
 - ShogiHome・将棋所・ShogiGUI など、USI エンジンを登録できる GUI にエンジンを登録するだけで使えます（Linux 版は glibc 2.34 以降。Ubuntu 22.04 以降などで動きます）。評価関数の読み込みに要る設定は同梱のファイルから自動で読みます。
-- エンジン本体の rshogi は GPL-3.0-or-later で[公開しています](https://github.com/SH11235/rshogi)。
+- エンジン本体の rshogi は GPL-3.0 で[公開しています](https://github.com/SH11235/rshogi)。
 
 ## おわりに
 
