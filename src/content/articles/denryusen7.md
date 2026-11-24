@@ -1,6 +1,6 @@
 ---
 title: 第7回電竜戦の感想（ラム将棋）
-date: 2026-11-23
+date: 2026-11-24
 description: 第7回電竜戦の決勝リーグ 3 位の振り返りと、大会全体の棋譜から集計した数字
 ogImage: /images/denryusen7-og.jpg
 ---
