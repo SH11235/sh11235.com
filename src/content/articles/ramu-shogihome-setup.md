@@ -116,7 +116,7 @@ chmod +x rshogi-linux-avx2 rshogi-linux-avx512 rshogi-linux-avx512vnni
 
 ## COCO をやねうら王で使う場合
 
-COCO の評価関数は、やねうら王の NNUE 版（halfkp_256x2-32-32）でも読めます。使い方は同梱の README.txt にあります（FV_SCALE を 14 にします）。
+COCO の評価関数は、やねうら王の NNUE 版（HalfKP 256x2-32-32）でも読めます。使い方は同梱の README.txt にあります（FV_SCALE を 14 にします）。
 
 ## ラム将棋（ブラウザ）で使う場合
 

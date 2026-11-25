@@ -75,8 +75,8 @@ https://drive.google.com/file/d/1hRw32V3IDN7nwsJWGUK9ucpG51etROgD/view?usp=drive
 探索部、学習器、CSA通信部、評価ツールなど全て自作（Rust が中心で、学習器の GPU の部分は CUDA C++）で臨みました。
 NNUE系の公開されているエンジンの中では、やねうら王系以外で一番上位に入れたのではないかと思います。
 エンジンは [rshogi](https://github.com/SH11235/rshogi)（GPL-3.0-or-later）、学習器は [tatara](https://github.com/SH11235/tatara)（MIT）で、どちらも公開しています。
-評価関数は LayerStacks 系（HalfKA_hm、2304-16-64）で、今回は進行度の重みでバケットを分けました（進行度重みによるバケット分割は [nodchip さんの考案](https://nodchip.hatenablog.com/entry/2026/02/04/000000)）。
-FT（入力層の幅。2304-16-64 の 2304）は 1536 を基準に実験を続けていましたが、大会直前に 2 倍の 3072 と中間の 2304 を学習し、探索パラメータの調整（SPSA）と対局での評価が先に間に合った 2304 を採用しました。
+評価関数は LayerStacks 系（HalfKA_hm、2304-15-64）で、今回は進行度の重みでバケットを分けました（進行度重みによるバケット分割は [nodchip さんの考案](https://nodchip.hatenablog.com/entry/2026/02/04/000000)）。
+FT（入力層の幅。2304-15-64 の 2304）は 1536 を基準に実験を続けていましたが、大会直前に 2 倍の 3072 と中間の 2304 を学習し、探索パラメータの調整（SPSA）と対局での評価が先に間に合った 2304 を採用しました。
 
 大会の少し前に開発用で買ったPCが壊れて実験が進まなくなり、参加するかも悩んだところでしたが何とか準備して参加しました。
 PCが壊れた頃は古いPCで犬を増やす（[ラム将棋アプリ](https://ramu-shogi.sh11235.com/play)に評価関数の選択肢を足す）という事をやっていました。
@@ -96,7 +96,7 @@ nnue-pytorch では、HalfKX系のアーキテクチャを試していた当時�
 その後、2026年5月に cuda-oxide がNVIDIAから発表されて、CUDAをRustで書ける（雑な説明）ということなので、LLMもあるし自作学習器にチャレンジしようと作り始めたのが [tatara](https://github.com/SH11235/tatara) でした。
 cuda-oxide は今はある程度安定化して [cuda-rust](https://github.com/NVIDIA/cuda-rust) のリポジトリの1要素になったようです。
 さらに、backend は CUDA C++ で書いた方が性能が出るので、tatara での実験が安定してきたところで CUDA C++ で書き直して高速化し、cuda-oxide はデフォルトでは使わなくなりました。
-nnue-pytorch と比べて10倍以上は高速化したはずなので（halfkp_256x2-32-32 の学習で比べた値）、最近主流になった LayerStacks 系のアーキテクチャも多くの人が試しやすくなったかと思います。
+nnue-pytorch と比べて10倍以上は高速化したはずなので（HalfKP 256x2-32-32 の学習で比べた値）、最近主流になった LayerStacks 系のアーキテクチャも多くの人が試しやすくなったかと思います。
 大会の[参加者一覧](https://denryu-sen.jp/denryusen/dr7_prd/members.html)の「使っているライブラリ」の欄を見ると何チームかが tatara を使っていて、決勝リーグの 10 チームでは、ラム将棋を含めて **5 チーム**（お紅さん狸・水匠・NagiNagisa・Cyfamate・ラム将棋）でした。
 これを作り上げるためにハードや電気代を溶かしてきましたが、今後のNNUE系開発者が節約できる電気代・時間の価値を考えればきっとプラスになっていると信じています。
 
@@ -109,9 +109,9 @@ WCSC36で奏乗チームのお手伝いをしているときに実験管理ツ�
 今では公開しているので誰でも利用可能です。
 https://nnue-lab.sh11235.com/
 bullet-shogi（fork の BulletOu にも引き継がれているはず）や tatara で学習すると experiment.json というメタデータのファイルが出力されるので、これをアップロードすると過去の実験を誰でも再現できる形で可視化できます。
-例えば、教師データの加工（qsearch 処理と、その後の重複削除）だけを変えて halfkp_256x2-32-32 を学習した実験は、次のように見られます。
+例えば、教師データの加工（qsearch 処理と、その後の重複削除）だけを変えて HalfKP 256x2-32-32 を学習した実験は、次のように見られます。
 
-![nnue-lab の実験のページ（halfkp_256x2-32-32、教師データの加工の比較）](./images/denryusen7-nnue-lab-sample.png)
+![nnue-lab の実験のページ（HalfKP 256x2-32-32、教師データの加工の比較）](./images/denryusen7-nnue-lab-sample.png)
 
 [この実験のページ](https://nnue-lab.sh11235.com/t/sh11235/experiments/01JTNNB0IJ7C1708D2C94C6902)
 
@@ -368,7 +368,7 @@ https://x.com/naginagisasub/status/2122179231522422854
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [第7回電竜戦「RAMU DR7」評価関数・エンジン一式](https://sh11235.booth.pm/items/9202483?utm_source=sh11235.com&utm_medium=blog&utm_campaign=denryusen7)                                      | 4,980円 | 大会で使った評価関数（FT 2304）そのままと、大会の探索パラメータを組み込んだエンジン                                                                                                               |
 | [「RAMU DR7」評価関数 3 種セット（RAMU mini・RAMU・RAMU big / FT 1536・2304・3072）](https://sh11235.booth.pm/items/9207955?utm_source=sh11235.com&utm_medium=blog&utm_campaign=denryusen7) | 9,800円 | 大きさ違いの評価関数 3 つ（FT 1536・2304・3072）と、それぞれのエンジン。2304 は上と同じもの                                                                                                       |
-| [将棋AI「COCO」評価関数・エンジン（無料）](https://sh11235.booth.pm/items/9207970?utm_source=sh11235.com&utm_medium=blog&utm_campaign=denryusen7)                                           | 無料    | 評価関数（halfkp_256x2-32-32）とエンジン。評価関数はやねうら王の NNUE 版でも FV_SCALE を 14 にして使えます。有料の 2 つと同じエンジンなので、お使いの PC でどの版が動くかを購入前に確かめられます |
+| [将棋AI「COCO」評価関数・エンジン（無料）](https://sh11235.booth.pm/items/9207970?utm_source=sh11235.com&utm_medium=blog&utm_campaign=denryusen7)                                           | 無料    | 評価関数（HalfKP 256x2-32-32）とエンジン。評価関数はやねうら王の NNUE 版でも FV_SCALE を 14 にして使えます。有料の 2 つと同じエンジンなので、お使いの PC でどの版が動くかを購入前に確かめられます |
 
 - 評価関数を動かすエンジン（rshogi。Windows 64bit 版と Linux x86_64 版の、それぞれ AVX2 版・AVX-512 版・AVX-512 VNNI 版）を同梱しています。
 - ShogiHome・将棋所・ShogiGUI など、USI エンジンを登録できる GUI にエンジンを登録するだけで使えます（Linux 版は glibc 2.34 以降。Ubuntu 22.04 以降などで動きます）。評価関数の読み込みに要る設定は同梱のファイルから自動で読みます。
